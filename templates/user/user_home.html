@@ -295,10 +295,13 @@
             <div class="app-title">Ish Hisoboti</div>
             <div class="user-profile" id="profileBtn">{{ user.username|first|upper }}</div>
             <div class="logout-menu" id="logoutMenu">
-                <button class="logout-btn" id="logoutBtn">
-                    <span>🚪</span>
-                    <span>Chiqish</span>
-                </button>
+                <form action="{% url 'autentific:logout' %}" method="post">
+                    {% csrf_token %}
+                    <button class="logout-btn" id="logoutBtn">
+                        <span>🚪</span>
+                        <span>Chiqish</span>
+                    </button>
+                </form>
             </div>
         </header>
 
