@@ -32,18 +32,19 @@ INSTALLED_APPS = [
 AUTH_USER_MODEL = 'main.CustomUser'
 
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",  # Birinchi joyga qo‘shing!
+    "corsheaders.middleware.CorsMiddleware",  
     "django.middleware.common.CommonMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'main.middlewares.VisitorTrackingMiddleware',
 ]
-
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # Frontend domeni (React, Vue yoki boshqa)
