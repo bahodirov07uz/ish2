@@ -6,3 +6,4 @@ qrcode
 reportlab
 pillow
 django-cors-headers
+gunicorn
