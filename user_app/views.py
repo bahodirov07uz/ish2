@@ -10,7 +10,7 @@ from main.models import Ish, IshRequest, Ishchi, EskiIsh
 def user_home(request):
     # Foydalanuvchi tizimga kirmagan bo'lsa, login sahifasiga yo'naltiramiz
     if not request.user.is_authenticated:
-        return redirect('autentific:login_page)
+        return redirect('autentific:login_page')
 
     now = timezone.now()
     current_month = now.month
