@@ -1,8 +1,10 @@
 from django.shortcuts import render,redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login,logout
 from django.contrib import messages
 from main.models import Ishchi,CustomUser
 from django.contrib.auth.hashers import make_password
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 def login_page(request):
     if request.method == 'POST':
@@ -72,3 +74,11 @@ def register_view(request):
         return redirect("autentific:login_page")
 
     return render(request, "register.html", {"ishchilar": ishchilar})
+
+@login_required
+@login_required
+def custom_logout(request):
+    """Foydalanuvchini tizimdan chiqarish va xabar bilan login sahifasiga yo'naltirish"""
+    logout(request)
+    messages.info(request, "Siz tizimdan muvaffaqiyatli chiqdingiz.")
+    return redirect('autentific:login_page')
