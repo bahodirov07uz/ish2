@@ -90,28 +90,14 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-import pymysql
-pymysql.install_as_MySQLdb()
-
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'magnashop$default',  # O'zingiz yaratgan MySQL bazasi nomi
-#         'USER': 'magnashop',  # MySQL foydalanuvchi nomi
-#         'PASSWORD': 'adora111',  # MySQL foydalanuvchi paroli
-#         'HOST': 'magnashop.mysql.pythonanywhere-services.com',
-#         'PORT': '3306',
-#     },
-#   }
-
-
+import dj_database_url
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    'default': dj_database_url.config(
+        default='postgresql://crm_user:X3UT340yLKbC8X9rNFKTQ7kkoNi18ebd@dpg-d1b7gc6uk2gs739el1n0-a.oregon-postgres.render.com/crm_db_yw2e',
+        conn_max_age=600,
+        ssl_require=True
+    )
 }
 
 
