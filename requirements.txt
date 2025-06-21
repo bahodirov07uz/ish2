@@ -7,3 +7,4 @@ reportlab
 pillow
 django-cors-headers
 gunicorn
+whitenoise
