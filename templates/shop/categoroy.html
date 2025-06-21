@@ -1,0 +1,323 @@
+
+    
+{% extends 'shop/base2.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+
+    <!-- Page Introduction Wrapper /- -->
+    <!-- Shop-Page -->
+    <div class="page-shop u-s-p-t-80">
+        <div class="container">
+            <!-- Shop-Intro -->
+            <div class="shop-intro">
+                <ul class="bread-crumb">
+                    <li class="has-separator">
+                        <a href="{%url 'shop:home'%}">Asosiy</a>
+                    </li>
+                    
+                    <li class="is-marked">
+                        <a href="">Kategoriya</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- Shop-Intro /- -->
+            <div class="row">
+                <!-- Shop-Left-Side-Bar-Wrapper -->
+               
+                <!-- Shop-Left-Side-Bar-Wrapper /- -->
+                <!-- Shop-Right-Wrapper -->
+                <div class="col-lg-9 col-md-9 col-sm-12">
+                    <!-- Page-Bar -->
+                    <div class="page-bar clearfix">
+                        <div class="shop-settings">
+                            <a id="list-anchor" class="active">
+                                <i class="fas fa-th-list"></i>
+                            </a>
+                            <a id="grid-anchor">
+                                <i class="fas fa-th"></i>
+                            </a>
+                        </div>
+                        <!-- Toolbar Sorter 1  -->
+                        <div class="toolbar-sorter">
+                
+                                
+                        </div>
+                        <!-- //end Toolbar Sorter 1  -->
+                        <!-- Toolbar Sorter 2  -->
+                        <!-- //end Toolbar Sorter 2  -->
+                    </div>
+                    <!-- Page-Bar /- -->
+                    <!-- Row-of-Product-Container -->
+                    <div class="row product-container list-style">
+                        {% for i in product %}
+                        <div class="product-item col-lg-4 col-md-6 col-sm-6">
+                            <div class="item">
+                                <div class="image-container">
+                                    <a class="item-img-wrapper-link" href="single-product.html">
+                                        <img class="img-fluid" src="{{i.image.url}}" alt="Product">
+                                    </a>
+                                    <div class="item-action-behaviors">
+                                        <a class="item-quick-look" data-toggle="modal" href="#modal-{{i.id}}">Quick Look</a>
+                                        <a class="item-mail" href="javascript:void(0)">Mail</a>
+                                        <a class="item-addwishlist" href="javascript:void(0)">Add to Wishlist</a>
+                                    </div>
+                                </div>
+                                <div class="item-content">
+                                    <div class="what-product-is">
+                                        <ul class="bread-crumb">
+                                            {% for q in i.tags.all %}
+                                            <li class="has-separator">
+                                                <a href="">{{q.name}}</a>
+                                            </li>
+                                            {% endfor %}
+                                          
+                                        </ul>
+                                        <h6 class="item-title">
+                                            <a href="single-product.html">{{i.nomi}}</a>
+                                        </h6>
+                                        <div class="item-description">
+                                            <p>{{i.description}}
+                                            </p>
+                                        </div>
+                                        <div class="item-stars">
+                                            <div class='star' title="4.5 out of 5 - based on 23 Reviews">
+                                                <span style='width:67px'></span>
+                                            </div>
+                                            <span>(23)</span>
+                                        </div>
+                                    </div>
+                                    <div class="price-template">
+                                        <div class="item-new-price">
+                                            {{i.narxi |floatformat:0|intcomma}} so'm
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                                {% if  i.is_new %}
+                                <div class="tag new">
+                                    <span>Yangi</span>
+                                </div>
+                                {% elif i.is_bestseller %}
+                                <span class="superscript-label-hot" style="margin-left: auto;" >HOT</span>
+
+                                {% endif %}
+
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                    </div>
+                    <!-- Row-of-Product-Container /- -->
+                </div>
+                <!-- Shop-Right-Wrapper /- -->
+            </div>
+        </div>
+    </div>
+    <!-- Shop-Page /- -->
+    <!-- Footer -->
+
+    {% for i in products %}
+    <div id="modal-{{i.id}}" class="modal fade" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <button type="button" class="button dismiss-button ion ion-ios-close" data-dismiss="modal"></button>
+                <div class="modal-body">
+                    <form action="{% url 'shop:add_cart' %}" method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <!-- Rasmlarni yonma-yon joylashtirish uchun konteyner -->
+                                <div class="variant-label">Variantlar</div>
+                                <div class="image-container">
+                                    
+                                    {% for color, image_url in i.image_by_color.items%}
+                                    <div class="zoom-area">
+                                         <!-- "Variantlar" yozuvi -->
+    
+                                        <img id="zoom-pro-quick-view" class="img-fluid product-image" 
+                                             src="{{ image_url  }}" 
+                                             srcset="{{ image_url  }} 1x, {{ image_url  }} 2x" 
+                                             data-zoom-image="{{ image_url  }}" 
+                                             alt="Zoom Image">
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <style>
+                                /* Rasmlarni yonma-yon joylashtirish uchun konteyner */
+                                .image-container {
+                                    display: flex; /* Flexbox yordamida yonma-yon joylashtirish */
+                                    flex-wrap: wrap; /* Rasmlarni qatorga sig'masa, yangi qatorga tushirish */
+                                    gap: 10px; /* Rasmlar orasidagi masofa */
+                                }
+                                    
+                                /* Har bir rasm uchun stil */
+                                .product-image {
+                                    border: 2px solid #ddd; /* Chegaralar qo'shish */
+                                    border-radius: 8px; /* Burchaklarni yumaloqlashtirish */
+                                    padding: 5px; /* Chegaralar va rasm orasidagi masofa */
+                                    width: 150px; /* Rasmning kengligi */
+                                    height: 150px; /* Rasmning balandligi */
+                                    object-fit: cover; /* Rasmni moslashtirish */
+                                }
+                            
+                                /* Sichqoncha ustiga kelganda chegaralar rangini o'zgartirish */
+                                .product-image:hover {
+                                    border-color: #007bff;
+                                }
+                                
+                                                    </style>
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <!-- Product-details -->
+                                <div class="all-information-wrapper">
+                                    <div class="section-1-title-breadcrumb-rating">
+                                        <div class="product-title">
+                                            <h1>
+                                                <a href="single-product.html">{{i.nomi}}</a>
+                                            </h1>
+                                        </div>
+                                        <ul class="bread-crumb">
+                                            <li class="has-separator">
+                                                <a href="home.html">Home</a>
+                                            </li>
+                                            {% for p in i.tags.all %}
+                                            <li class="has-separator">
+                                                <a href="shop-v1-root-category.html">{{p.name}}</a>
+                                            </li>
+                                            {% endfor %}
+                                            
+                                        </ul>
+                                        <div class="product-rating">
+                                            <div class='star' title="4.5 out of 5 - based on 23 Reviews">
+                                                <span style='width:67px'></span>
+                                            </div>
+                                            <span>(23)</span>
+                                        </div>
+                                    </div>
+                                    <div class="section-2-short-description u-s-p-y-14">
+                                        <h6 class="information-heading u-s-m-b-8">Description:</h6>
+                                        <p>
+                                            {{i.description}}
+                                        </p>
+                                    </div>
+                                    <div class="section-3-price-original-discount u-s-p-y-14">
+                                        <div class="price">
+                                            <h4>{{i.narxi|floatformat:0 |intcomma}} so'm</h4>
+                                            <input type="hidden" name="cartnarx" value="{{i.narxi}}">
+                                        </div>
+                                        <div class="original-price">
+                                            <span>Original Price:</span>
+                                            <span>$60.00</span>
+                                        </div>
+                                        <div class="discount-price">
+                                            <span>Discount:</span>
+                                            <span>8%</span>
+                                        </div>
+                                        <div class="total-save">
+                                            <span>Save:</span>
+                                            <span>$5</span>
+                                        </div>
+                                    </div>
+                                    <div class="section-4-sku-information u-s-p-y-14">
+                                        <h6 class="information-heading u-s-m-b-8">Sku Information:</h6>
+
+                                        {% if i.soni > 0 %}
+                                        <div class="availability">
+                                            <span>Availability:</span>
+                                            <span>In Stock</span>
+                                        </div>
+                                        <div class="left">
+                                            <span>Only:</span>
+                                            <span>{{i.soni}} left</span>
+                                        </div>
+                                        {% else %}
+                                        <div class="availability">
+                                            <span>Availability:</span>
+                                            <span>Tugadi</span>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <input type="hidden" name="product_id" value="{{ i.id }}">
+                                    <div class="section-5-product-variants u-s-p-y-14">
+                                            <h6 class="information-heading u-s-m-b-8">Product Variants:</h6>
+                                            <div class="color u-s-m-b-11">
+                                                <label for="available-color">Available Color:</label>
+                                                <select id="available-color" name="color">
+                                                    {% for variant in i.colors %}
+                                                        <option value="{{ variant }}">{{ variant }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                
+                                            </div>
+                                            {% for i in i.variants.all %}
+                                            <input type="hidden" name="variant_id" value="{{i.id}}" id="">
+                                            {% endfor %}
+                                        <div class="sizes u-s-m-b-11">
+                                            <label for="available-size">Available Size:</label>
+                                            <select id="available-size" name="size">
+                                                {% for size in i.sizes %}
+                                                    <option value="{{ size }}">{{ size }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <input type="hidden" name="product_name" value="{{ i.nomi }}">
+                                            <input type="hidden" id="variant-image" name="variant_image" value="{% for color, image_url in i.image_by_color.items %}{% if forloop.first %}{{ image_url }}{% endif %}{% endfor %}">                                        </div>
+                                    </div>
+                                    <div class="section-6-social-media-quantity-actions u-s-p-y-14">
+                                            <div class="quick-social-media-wrapper u-s-m-b-22">
+                                                <span>Share:</span>
+                                                <ul class="social-media-list">
+                                                    <li>
+                                                        <a href="#">
+                                                            <i class="fab fa-facebook-f"></i>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#">
+                                                            <i class="fab fa-twitter"></i>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#">
+                                                            <i class="fab fa-google-plus-g"></i>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#">
+                                                            <i class="fas fa-rss"></i>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#">
+                                                            <i class="fab fa-pinterest"></i>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="quantity-wrapper u-s-m-b-22">
+                                                <span>Quantity:</span>
+                                                <div class="quantity">
+                                                    <input type="text" name="quantity" class="quantity-text-field" value="1">
+                                                    <a class="plus-a"  data-max="1000">&#43;</a>
+                                                    <a class="minus-a" data-min="1">&#45;</a>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <button class="button button-outline-secondary" name="add_to_cart" type="submit">Add to cart</button>
+                                                <button class="button button-outline-secondary far fa-heart u-s-m-l-6"></button>
+                                                <button class="button button-outline-secondary far fa-envelope u-s-m-l-6"></button>
+                                            </div>
+                                    </div>
+                                </div>
+                                <!-- Product-details /- -->
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+  
+    {% endfor %}
+{% endblock content %}

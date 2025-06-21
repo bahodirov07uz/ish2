@@ -1,0 +1,8 @@
+Django>=3.2,<5.0
+djangorestframework
+mysqlclient
+pymysql
+qrcode
+reportlab
+pillow
+django-cors-headers

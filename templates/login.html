@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MAGNA | Login</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <style>
+    :root {
+      --primary-accent: #4263eb;
+      --secondary-accent: #63e6be;
+      --danger-accent: #ff6b6b;
+      --background-dark: #181920;
+      --background-panel: #232439;
+      --input-bg: #21222d;
+      --input-border: #34354a;
+      --input-focus: #4263eb;
+      --text-main: #f3f6fa;
+      --text-muted: #b5bac6;
+      --shadow: 0 6px 32px 0 rgba(0,0,0,.27);
+      --radius: 14px;
+      --transition: .25s cubic-bezier(.4,0,.2,1);
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: linear-gradient(120deg, #232439 0%, #181920 100%);
+      color: var(--text-main);
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .auth-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+    .auth-card {
+      background: var(--background-panel);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      padding: 2.6rem 2.3rem 2.1rem 2.3rem;
+      min-width: 350px;
+      width: 100%;
+      max-width: 400px;
+      margin: 2rem 0;
+      position: relative;
+      z-index: 2;
+      animation: fadeIn 1s cubic-bezier(.4,0,.2,1);
+    }
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(40px);}
+      100% { opacity: 1; transform: none;}
+    }
+    .auth-logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    .auth-logo h1 {
+      font-size: 2.3rem;
+      font-weight: 800;
+      margin: 0;
+      letter-spacing: 2px;
+      background: linear-gradient(90deg,var(--primary-accent),var(--secondary-accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .auth-logo h2 {
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      margin-top: .5rem;
+      letter-spacing: .5px;
+    }
+    .input-group {
+      margin-bottom: 1.3rem;
+      position: relative;
+    }
+    .input-group label {
+      display: block;
+      margin-bottom: .45rem;
+      color: var(--text-muted);
+      font-size: .97rem;
+      letter-spacing: .3px;
+    }
+    .input-group input {
+      width: 100%;
+      padding: 11px 44px 11px 14px;
+      background: var(--input-bg);
+      border: 1.7px solid var(--input-border);
+      border-radius: 7px;
+      color: var(--text-main);
+      font-size: 1rem;
+      transition: border-color var(--transition), box-shadow var(--transition);
+      outline: none;
+      box-sizing: border-box;
+    }
+    .input-group input:focus {
+      border-color: var(--input-focus);
+      box-shadow: 0 0 0 2px rgba(66,99,235,0.12);
+    }
+    .toggle-password {
+      position: absolute;
+      right: 14px;
+      top: 38px;
+      transform: translateY(-50%);
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: color var(--transition);
+      z-index: 5;
+    }
+    .toggle-password:hover {
+      color: var(--primary-accent);
+    }
+    .login-btn {
+      width: 100%;
+      padding: 13px 0;
+      background: linear-gradient(90deg,var(--primary-accent) 60%,var(--secondary-accent) 100%);
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-size: 1.08rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-top: .1rem;
+      cursor: pointer;
+      transition: box-shadow var(--transition), transform var(--transition), background var(--transition);
+      box-shadow: 0 2px 12px 0 rgba(66,99,235,0.14);
+    }
+    .login-btn:hover, .login-btn:focus {
+      background: linear-gradient(90deg,var(--primary-accent) 40%,var(--secondary-accent) 100%);
+      transform: translateY(-2px) scale(1.01);
+      box-shadow: 0 6px 24px 0 rgba(66,99,235,0.18);
+    }
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      color: var(--text-muted);
+      margin: 1.7rem 0 1.2rem 0;
+      font-size: .89rem;
+    }
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid var(--input-border);
+    }
+    .divider::before {
+      margin-right: .6em;
+    }
+    .divider::after {
+      margin-left: .6em;
+    }
+    .register-link {
+      text-align: center;
+      font-size: .97rem;
+      color: var(--text-muted);
+    }
+    .register-link a {
+      color: var(--primary-accent);
+      font-weight: 600;
+      text-decoration: none;
+      margin-left: .25em;
+      transition: color var(--transition);
+    }
+    .register-link a:hover { color: var(--secondary-accent); text-decoration: underline;}
+    .alert {
+      background: rgba(255,107,107,0.13);
+      border-left: 4px solid var(--danger-accent);
+      color: var(--danger-accent);
+      margin: .7rem 0 1.5rem 0;
+      border-radius: 7px;
+      padding: .7rem 1rem;
+      font-size: .97rem;
+      animation: fadeIn .7s cubic-bezier(.4,0,.2,1) .2s backwards;
+    }
+    .bg-float {
+      position: absolute;
+      border-radius: 50%;
+      opacity: .19;
+      filter: blur(60px);
+      z-index: 0;
+      animation: float 12s ease-in-out infinite;
+    }
+    .bg-float.green {
+      width: 350px; height: 350px; left: -120px; top: -80px;
+      background: var(--secondary-accent);
+      animation-duration: 18s;
+    }
+    .bg-float.blue {
+      width: 250px; height: 250px; right: -90px; bottom: -60px;
+      background: var(--primary-accent);
+      animation-direction: reverse;
+      animation-duration: 15s;
+    }
+    @keyframes float {
+      0% { transform: translateY(0) scale(1);}
+      50% { transform: translateY(40px) scale(.97);}
+      100% { transform: translateY(0) scale(1);}
+    }
+    @media (max-width: 500px) {
+      .auth-card { padding: 1.2rem .7rem 1.5rem .7rem; min-width: 0; max-width: 95vw;}
+      .bg-float { display: none; }
+      .auth-logo h1 { font-size: 1.6rem;}
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-float green"></div>
+  <div class="bg-float blue"></div>
+
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <h1>MAGNA</h1>
+        <h2>Hisobingizga kiring</h2>
+      </div>
+      <form id="loginForm" method="post" action="{% url 'autentific:login_page' %}" autocomplete="on">
+        {% csrf_token %}
+        <div class="input-group">
+          <label for="username">Login</label>
+          <input type="text" id="username" name="username" class="form-control" placeholder="Login" required autocomplete="username">
+        </div>
+        <div class="input-group">
+          <label for="password">Parol</label>
+          <input type="password" id="password" name="password" class="form-control" placeholder="Parol" required autocomplete="current-password">
+          <i class="bi bi-eye-slash toggle-password" id="togglePassword"></i>
+        </div>
+        {% if messages %}
+          <div class="alert">
+            {% for message in messages %}
+              {{ message }}
+            {% endfor %}
+          </div>
+        {% endif %}
+        <button type="submit" class="login-btn">Kirish</button>
+      </form>
+      <div class="divider">Yangi foydalanuvchimisiz?</div>
+      <div class="register-link">
+        <span>Hisob yo'qmi?</span>
+        <a href="{% url 'autentific:register_page' %}">Ro'yxatdan o'ting</a>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Parolni ko'rsatish/berkitish
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    togglePassword.addEventListener('click', function() {
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+      this.classList.toggle('bi-eye-slash');
+      this.classList.toggle('bi-eye');
+    });
+
+    // Mobilda klaviatura Enter bosilganda submit
+    document.getElementById('loginForm').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        this.submit();
+      }
+    });
+  </script>
+</body>
+</html>

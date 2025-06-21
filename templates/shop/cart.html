@@ -1,0 +1,120 @@
+{% extends 'shop/base2.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+
+<div class="container mt-4 mb-4">
+    <div class="row ">
+        <!-- Savatcha qismi -->
+        <div class="col-md-8">
+            <div class="card p-3">
+                <h4 class="cart-header">Savatingiz, <span class="text-primary">3 mahsulot</span></h4>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" checked>
+                    <label class="form-check-label">Hammasini yechish</label>
+                </div>
+                <form action="">
+                    {% for k,i in cart.items %}                
+                    <div class="d-flex align-items-center border-bottom py-3">
+                        <input class="form-check-input me-3" type="checkbox" checked>
+                        <img class="img-fluid" src="{{i.image}}" class="cart-item img-fluid">
+                        <div class="ms-3 ml-3">
+                            <p class="">{{i.name}}</p>
+                            <h6 class="text-danger" style="font-weight: 700;"><del></del> <span class="fw-bold text-dark">{{i.price |floatformat:0|intcomma}} so'm</span></h6>
+                            <p>O'lcham:  {{i.size}}</p>
+                        </div>
+                            
+                                <div class="action-wrapper">
+                                    <a href="#" class="remove-cart-item" data-cart-key="{{ i.product_id }}_{{ i.color }}_{{ i.size }}">
+                                        <button class="button button-outline-secondary fas fa-trash"></button>
+                                    </a>                                                                 
+                                </div>
+    
+                            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                            <script>
+                                $(document).ready(function(){
+                                    $(".remove-cart-item").click(function(event){
+                                        event.preventDefault();  // Sahifa reload bo‘lishining oldini olamiz
+                                        
+                                        let cartKey = $(this).data("cart-key");  // Mahsulot ID sini olamiz
+                                        
+                                        $.ajax({
+                                            url: `/shop/cart/remove/${cartKey}/`,  // AJAX orqali so‘rov jo‘natamiz
+                                            type: "GET",
+                                            success: function(response){
+                                                alert(response.message);  // Xabar chiqaramiz
+                                                location.reload();  // Sahifani yangilaymiz
+                                            }
+                                        });
+                                    });
+                                });
+                            </script>
+                    </div>
+                    {% endfor %}
+                </form>
+            </div>
+        </div>
+
+        <!-- Buyurtma qismi -->
+        <div class="col-md-4">
+            <div class="total-box">
+                <h5>Buyurtmangiz</h5>
+                <p class="text-muted">Mahsulotlar ({{quantity}}):  <span class="float-end">{{total_price |floatformat:0|intcomma}} so'm</span></p>
+                <p class="text-muted">Yetkazib berish: <span class="float-end">20,000 so'm</span></p>
+                <hr>
+                <h5>Jami: <span class="float-end font-weight-bold">
+                    {% with total=total_price|add:20000 %}
+                        {{ total|floatformat:0|intcomma }}
+                    {% endwith %}
+                </span></h5>
+                <a href="{% url 'shop:checkout' %}"><button class="btn btn-danger mt-4" type="button">Rasmiylashtirishga o'tish</button></a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+    .card {
+        border: none;
+    }
+    .cart-header {
+        font-weight: bold;
+    }
+    .cart-item img {
+        width: 100px;
+        height: auto;
+    }
+    .total-box {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .btn-purple {
+        background-color: #6f42c1;
+        color: white;
+        font-size: 18px;
+        padding: 10px;
+        width: 100%;
+        border-radius: 5px;
+    }
+    .btn-purple:hover {
+        background-color: #5a34a1;
+    }
+    .text-green {
+        color: green;
+    }
+    .img-fluid{
+        max-width: 100%;
+        height: 180px;
+        width: auto;
+        
+    }
+</style>
+
+
+{% endblock content %}

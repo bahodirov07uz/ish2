@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+<main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
+
+
+    <div class="container-fluid py-4">
+        <!-- Mahsulotlar Jadvali -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card mb-4">
+                    <div class="card-header pb-0">
+                        <h6>{{xaridor.name}} <span style="color: darkblue;">{{xaridor.telefon}}</span></h6>
+                    </div>
+                    <form method="get" action="" class="m-order u-s-m-b-30 mb-1">
+                        <select name="filter" id="viloyat" onchange="this.form.submit()" class="select-box select-box--primary-style">
+                            <option value="all" {% if request.GET.filter == "all" %}selected{% endif %}>Hammasi</option>
+                            <option value="Arzon" {% if request.GET.filter == "Arzon" %}selected{% endif %}>Arzon</option>
+                            <option value="Qimmat" {% if request.GET.filter == "Qimmat" %}selected{% endif %}>Qimmat</option>
+                            <option value="Kop" {% if request.GET.filter == "Kop" %}selected{% endif %}>Soni ko'proq</option>
+                            <option value="sotuv" {% if request.GET.filter == "sotuv" %}selected{% endif %}>Ko'proq sotuv</option>
+                        </select>
+                    </form>   
+                    <div class="card-body px-0 pt-0 pb-2">
+                        <div class="table-responsive p-0">
+                            <table class="table table-bordered table-hover ">
+                                <thead class="table-dark white">
+                                    <tr>
+                                        <th class="text-uppercase text-xxs font-weight-bolder opacity-7">Sana</th>
+                                        <th class="text-uppercase text-xxs font-weight-bolder opacity-7 ps-2">Mahsulot</th>
+                                        <th class="text-uppercase text-xxs font-weight-bolder opacity-7 ps-2">Soni</th>
+                                        <th class="text-uppercase text-xxs font-weight-bolder text-center opacity-7 ps-2">Summa</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for o in xaridor.kirimlar.all %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex px-2">
+                                                <!-- Modal -->
+                                                            
+                                               
+                                                <div class="my-auto">
+                                                    <h6 class="mb-0 text-sm">{{ o.sana}}</h6>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <p class="text-sm font-weight-bold mb-0">{{ o.mahsulot }} </p>
+                                        </td>
+                                        <td>
+                                            <span class="text-xs font-weight-bold">{{ o.quantity }} </span>
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            <span class="me-2 text-xs font-weight-bold">{{ o.summa|floatformat:0|intcomma }} so'm</span>
+                                        </td>
+                                 
+                                    </tr>
+                                    {% endfor %}                                 
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    
+    </div>
+</main>
+{% endblock  %}

@@ -1,0 +1,1415 @@
+{% extends 'shop/base2.html' %}
+{% load static %}
+{% load humanize %}
+{% load custom_filters %}
+{% block content %}
+
+    <!-- Page Introduction Wrapper /- -->
+    <!-- Single-Product-Full-Width-Page -->
+     
+    <div class="page-detail u-s-p-t-80">
+        <div class="container">
+            <!-- Product-Detail -->
+            <div class="row">
+                
+                <div class="col-lg-6 col-md-6 col-sm-12">
+                    <!-- Product-zoom-area -->
+                    <div class="zoom-area">
+                        <img id="" class="img-fluid" src="{{ product.image.url }}" alt="Product Image">
+                        <div class="section-1-title-breadcrumb-rating mt-2" >
+                            <div class="product-title">
+                                <h1 class="u-d-none-lg">
+                                    <a href=""><h1 style="font-weight: 550; text-align: left;">{{ product.nomi  }}</h1></a>
+                                </h1>
+                                <h5 class="d-md-none">
+                                    <a href=""><h5 style="font-weight: 550; text-align: left;">{{ product.nomi  }}</h5></a>
+                                </h5>
+                            </div>
+                            <ul class="bread-crumb">
+                                {% for o in product.tags.all %}
+                                <li class="has-separator">
+                                    <a href="">{{o.name}}</a>
+                                </li>
+                                {% endfor %}
+                               
+                            </ul>
+                        </div>
+                        <div class="statists mt-3 rounded-3">
+                            <div class="stat font-weight-bold" style="font-size: large;">
+                                {{avg_ratings|dict_get:product.id|floatformat:1}}
+                                <div class='star' title="{{avg_ratings|dict_get:product.id|floatformat:1}} out of 5 - based on 0 Reviews">
+                                    <span class="" style='width:{{avg_ratings|dict_get:product.id|floatformat:1|mul:15}}px '></span>
+                                </div>
+                            </div>
+                      
+                             <div class="stat">
+                                {{product.reviews.count}}   izohlar
+                            </div>
+                            <div  class="stat" >
+                                {{2500}}+  buyurtmalar 
+                            </div>
+                        
+                        </div>
+                    </div>
+                    <!-- Product-zoom-area /- -->
+                </div>
+
+
+
+                <div class="col-lg-6 col-md-6 col-sm-12 ">
+                    <div class="" >
+                        <div class="all-information-wrapper ml-2 " >            
+                            <form action="{% url 'shop:add_cart' %}" method="post">
+                                {% csrf_token %}
+                                <div class="carousel">
+                                    <div class="carousel-inner">
+                                        {% for color, image_url in product.image_by_color.items %}
+                                            <div class="carousel-item">
+                                                <img src="{{ image_url }}" alt="{{ color }}">
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    <button class="carousel-control prev">&#10094;</button>
+                                    <button class="carousel-control next">&#10095;</button>
+                                </div>
+                                <div class="color u-s-m-b-11" style="text-align: left;">
+                                    <label for="available-color">Mahsulot ranglari:</label>
+                                    <div id="gallery" class="color-options">
+                                        {% for color, image_url in product.image_by_color.items %}
+                                            <div class="color-option" data-color="{{ color }}" data-image="{{ image_url }}">
+                                                <img src="{{ image_url }}" alt="{{ color }}" title="{{ color }}" style="height: 80px; border-radius: 5px;">
+                                            </div>
+                                        {% endfor %}
+                                            
+                                        {% for o in product.variants.all %}
+                                        <input type="hidden" name="variant_id" id="selected-variant-id" value="{{o.id}}">
+                                        {% endfor %}
+                                    </div>
+                                <div class="section-3-price-original-discount u-s-p-y-14" style="text-align: left;">
+                                    <div class="sizes u-s-m-b-11  d-grid">
+                                        <label for="available-size">O'lchamlar:</label>
+                                        <div class="size-buttons">
+                                            {% for size in product.sizes %}
+                                            <button type="button" class="size-button" data-size="{{ size }}" data-variant-id="{{ variant.id }}">{{ size }}</button>
+                                        {% endfor %}
+                                        </div>
+                                        <input type="hidden" id="selected-size" name="size">
+                                        <input type="hidden" id="selected-variant-id" name="selected_variant_id">
+                                        </div>
+                         
+                                    </div>
+                                    <div class="price" style="text-align: left;">
+                                        <h2 class="font-weight-bold">{{ product.narxi|floatformat:0|intcomma }} so'm</h2>
+                                        <span >Qolgan: 28 ta</span>
+                                        <input type="hidden" name="cartnarx" value="{{ product.narxi }}">
+                                    </div>
+                                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                                    <input type="hidden" name="product_name" value="{{ product.nomi }}">
+                                    <div class="section-5-product-variants u-s-p-y-14">
+    
+                                            <input type="hidden" name="color" id="selected-color">
+                                            <input type="hidden" name="variant_image" id="selected-variant-image">
+                                    </div>
+                                    <div class="section-6-social-media-quantity-actions u-s-p-y-14" style="text-align: left;">
+                                        <div class="quantity-wrapper u-s-m-b-22">
+                                            <span>Soni:</span>
+                                            <div class="quantity">
+                                                <input type="text" name="quantity" class="quantity-text-field" value="1">
+                                                <a class="plus-a" data-max="1000">&#43;</a>
+                                                <a class="minus-a" data-min="1">&#45;</a>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <button class="button button-outline-secondary" type="submit">Savatga qo'shish</button>
+                                            <button class="button button-outline-secondary far fa-heart u-s-m-l-6"></button>
+                                            <button class="button button-outline-secondary far fa-envelope u-s-m-l-6"></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </form>
+                        </div>
+                    </div>
+                    
+                                <script>
+                                    const colorOptions = document.querySelectorAll('.color-option');
+                                    const sizeOptionsContainer = document.getElementById('size-options');
+                                    const selectedColorInput = document.getElementById('selected-color');
+                                    const selectedSizeInput = document.getElementById('selected-size');
+                                    const selectedVariantIdInput = document.getElementById('selected-variant-id');
+                                    const selectedVariantImageInput = document.getElementById('selected-variant-image');
+                                
+                                    const carouselInner = document.querySelector('.carousel-inner');
+                                    const carouselItems = document.querySelectorAll('.carousel-item');
+                                    let currentIndex = 0;
+                                
+                                    const variantsByColor = {
+                                        {% for color, variants in product.variants_by_color.items %}
+                                            "{{ color }}": [
+                                                {% for variant in variants %}
+                                                    { size: "{{ variant.size }}", variantId: "{{ variant.id }}" },
+                                                {% endfor %}
+                                            ],
+                                        {% endfor %}
+                                    };
+                                
+                                    // Karuselni yangilash funksiyasi
+                                    function updateCarousel(index) {
+                                        const offset = -index * 100;
+                                        carouselInner.style.transform = `translateX(${offset}%)`;
+                                    }
+                                
+                                    // Karuselni keyingi rasmlarga o'tkazish
+                                    document.querySelector('.carousel-control.next').addEventListener('click', () => {
+                                        currentIndex = (currentIndex + 1) % carouselItems.length;
+                                        updateCarousel(currentIndex);
+                                    });
+                                
+                                    // Karuselni oldingi rasmlarga o'tkazish
+                                    document.querySelector('.carousel-control.prev').addEventListener('click', () => {
+                                        currentIndex = (currentIndex - 1 + carouselItems.length) % carouselItems.length;
+                                        updateCarousel(currentIndex);
+                                    });
+                                
+                                    // Rang tanlanganda ishlaydigan funksiya
+                                    colorOptions.forEach(option => {
+                                        option.addEventListener('click', function() {
+                                            // Barcha rang variantlaridan aktiv klassni olib tashlash
+                                            colorOptions.forEach(opt => opt.classList.remove('active'));
+                                            
+                                            // Tanlangan rang variantiga aktiv klass qo'shish
+                                            this.classList.add('active');
+                                            
+                                            // Tanlangan rang va rasmni yashirin inputlarga joylash
+                                            const selectedColor = this.dataset.color;
+                                            selectedColorInput.value = selectedColor;
+                                            selectedVariantImageInput.value = this.dataset.image;
+                                
+                                            // Karuselni tanlangan rasmga o'tkazish
+                                            const selectedIndex = Array.from(colorOptions).indexOf(this);
+                                            currentIndex = selectedIndex;
+                                            updateCarousel(currentIndex);
+                                
+                                            // Avvalgi o'lcham variantlarini tozalash
+                            
+                                
+                                            // Tanlangan rangga mos o'lcham variantlarini yuklash
+                                            variantsByColor[selectedColor].forEach(variant => {
+                                                const sizeOption = document.createElement('div');
+                                                sizeOption.classList.add('size-option');
+                                                sizeOption.textContent = variant.size;
+                                                sizeOption.dataset.size = variant.size;
+                                                sizeOption.dataset.variantId = variant.variantId;
+                                
+                                                // O'lcham variantiga bosilganda ishlaydigan funksiya
+                                                sizeOption.addEventListener('click', function() {
+                                                    // Barcha o'lcham variantlaridan aktiv klassni olib tashlash
+                                                    document.querySelectorAll('.size-option').forEach(opt => opt.classList.remove('active'));
+                                                    
+                                                    // Tanlangan o'lcham variantiga aktiv klass qo'shish
+                                                    this.classList.add('active');
+                                                    
+                                                    // Tanlangan o'lcham va variant ID ni yashirin inputlarga joylash
+                                                    selectedSizeInput.value = this.dataset.size;
+                                                    selectedVariantIdInput.value = this.dataset.variantId;
+                                                });
+                                
+                                                sizeOptionsContainer.appendChild(sizeOption);
+                                            });
+                                        });
+                                    });
+                                
+                                    // O'lcham tanlanganda ishlaydigan funksiya
+                                    const sizeButtons = document.querySelectorAll('.size-button');
+                                    sizeButtons.forEach(button => {
+                                        button.addEventListener('click', function() {
+                                            // Barcha o'lcham tugmalaridan aktiv klassni olib tashlash
+                                            sizeButtons.forEach(btn => btn.classList.remove('active'));
+                                            
+                                            // Tanlangan o'lcham tugmasiga aktiv klass qo'shish
+                                            this.classList.add('active');
+                                            
+                                            // Tanlangan o'lchamni yashirin inputga joylash
+                                            selectedSizeInput.value = this.dataset.size;
+                                        });
+                                    });
+                                    
+                                </script>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Single-Product-Full-Width-Page /- -->
+    <style> .custom-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        padding: 10px;
+        width: 360px;
+        height: 80px;
+        background-color: white;
+    }
+
+    .left-section {
+        width: 200px;
+        height: 50px;
+        background-color: #f4f4f4;
+        border-radius: 10px;
+    }
+
+    .right-section {
+        width: 60px;
+        height: 50px;
+        background-color: #eee;
+        border-radius: 10px;
+    }
+
+    .carousel {
+        position: relative;
+        width: 100%;
+        max-width: 500px;
+        margin: auto;
+        overflow: hidden;
+    }
+
+    .carousel-inner {
+        display: flex;
+        transition: transform 0.5s ease;
+    }
+
+    .carousel-item {
+        min-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .carousel-item img {
+        width: 100%;
+        display: block;
+    }
+
+    .carousel-control {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+    }
+
+    .carousel-control.prev {
+        left: 10px;
+    }
+
+    .carousel-control.next {
+        right: 10px;
+    }
+
+    .color-options {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .color-option {
+        cursor: pointer;
+        border: 2px solid transparent;
+        padding: 5px;
+    }
+
+    .color-option.active {
+        border-color: #000;
+    }
+
+    .color-option img {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+    }
+
+    .size-options {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .size-option {
+        cursor: pointer;
+        border: 2px solid transparent;
+        padding: 5px;
+        background-color: #f4f4f4;
+        border-radius: 5px;
+    }
+
+    .size-option.active {
+        border-color: #000;
+    }
+        .size-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            color: black;
+        }
+    
+        .size-button {
+            cursor: pointer;
+            border: 2px solid #6b6a6a;
+            padding: 10px 15px;
+            background-color: #ffffff;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            color: rgb(0, 0, 0);
+        }
+    
+        .size-button.active {
+            border-color: #000;
+            background-color:#e2dedf;
+            color: #060606;
+        }
+        .statists{
+            border: 1px solid #ccc;
+            padding: 20px;
+            width: 500px;
+            height: 90px; 
+            margin: auto;
+            margin-right: 50px;
+            border-radius: 10px;
+            padding-top: 10px;
+        
+        }
+        .stat{
+            font-size: 14px; color: #555; margin-bottom: 3px;
+        }
+    @media(max-width:768px){
+        .statists{
+            border: 1px solid #ccc;
+            padding: 20px;
+            width: 370px;
+            height: 80px; 
+            margin: auto;
+            border-radius: 10px;
+            padding-top: 5px;
+            text-align: left;
+            
+
+        }
+        .stat{
+            font-size: 12px; color: #555; 
+        }
+    }
+    </style>
+<!-- JavaScript -->
+
+                <!-- Product-Detail /- -->
+                <!-- Detail-Tabs -->
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="detail-tabs-wrapper u-s-p-t-80">
+                            <div class="detail-nav-wrapper u-s-m-b-30">
+                                <ul class="nav single-product-nav justify-content-center">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-toggle="tab" href="#description">Tavsif</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab" href="#specification">Parametrlar</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab" href="#review">Ko'rishlar (15)</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="tab-content">
+                                <!-- Description-Tab -->
+                                <div class="tab-pane fade active show" id="description">
+                                    <div class="description-whole-container">
+                                        <p class="desc-p u-s-m-b-26">{{product.description}}
+                                        </p>
+                                        <img class="desc-img img-fluid u-s-m-b-26" src="{{product.image.url}}"  alt="Product">
+                                        <iframe class="desc-iframe u-s-m-b-45" width="710" height="400" src="{% static 'images/product/iframe-youtube.jpg'%}" allowfullscreen></iframe>
+                                    </div>
+                                </div>
+                                <!-- Description-Tab /- -->
+                                <!-- Specifications-Tab -->
+                                <div class="tab-pane fade" id="specification">
+                                    <div class="specification-whole-container">
+                                        <div class="spec-ul u-s-m-b-50">
+                                            <h4 class="spec-heading">Mahsulot variantlari</h4>
+                                            <ul>
+                                                {% for i in product.colors %}
+                                                <li>{{i}}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+
+                                        <div class="spec-table u-s-m-b-50">
+                                            <h4 class="spec-heading">General Information</h4>
+                                            <table>
+                                                <tr>
+                                                    <td>Sku</td>
+                                                    <td>AY536FA08JT86NAFAMZ</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <div class="spec-table u-s-m-b-50">
+                                            <h4 class="spec-heading">Product Information</h4>
+                                            <table>
+                                                <tr>
+                                                    <td>Asosiy Material</td>
+                                                    <td>Charm</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Variantlar</td>
+                                                    {% for i in product.colors %}                                               
+                                                    <td>{{i}}</td>
+                                                    {% endfor %}
+                                                </tr>
+                                                <tr>
+                                                    <td>Sleeves</td>
+                                                    {% for i in product.sizes%}
+                                                        <td>{{i}}</td>
+                                                    {% endfor %}
+                                                </tr>
+                                                <tr>
+                                                    <td>Soni</td>
+                                                    
+                                                    <td>{{product.soni}} ta bor</td>
+                                                </tr>
+                                            
+                                            
+
+                                                <tr>
+                                                    <td>Kategoriya</td>
+                                                    <td>{{product.category}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Shipping Weight (kg)</td>
+                                                    <td>0.5</td>
+                                                </tr>
+                                            </table>
+                                            <h4 class="spec-heading">General Information</h4>
+                                        
+                                        </div>
+                                        <div class="col-md-4 mb-4">
+                                            <div class="card shadow">
+                                                <div class="card-header bg-success text-white">
+                                                    <h5 class="card-title mb-0">Ishchi qo'shish </h5>
+                                                </div>
+                                                <div class="card-body">
+                                                    <a class="btn btn-outline-secondary btn-sm w-100" data-bs-toggle="modal" data-bs-target="#IshchiModal">Variantlar ro'yxati</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal fade" id="IshchiModal" tabindex="-1" aria-labelledby="IshchiModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="addJobModalLabel">Ishchi qo'shish</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <table class="table table-bordered">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Ism</th>
+                                                                <th>Familiya</th>
+                                                                <th>Telefon</th>
+                                                                <th>Ish Turi</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>Ali</td>
+                                                                <td>Valiyev</td>
+                                                                <td>+998901234567</td>
+                                                                <td>Dasturchi</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Vali</td>
+                                                                <td>Aliyev</td>
+                                                                <td>+998901234568</td>
+                                                                <td>Dizayner</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Yopish</button>
+                                                        <button type="button" class="btn btn-primary">Saqlash</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                
+                                </div>
+                                <!-- Specifications-Tab /- -->
+                                <!-- Reviews-Tab -->
+                                <div class="tab-pane fade" id="review">
+                                    <div class="review-whole-container">
+                                        <!-- Mahsulot haqida asosiy ma'lumotlar -->
+                                      
+
+                                        <!-- Reytinglarni ko'rsatish -->
+                          
+
+                                        <div class="container mt-4">
+                                            <h4>Fikr qoldiring</h4>
+                                    
+                                            <form id="rating-form" method="post" action="{% url 'shop:submit_review' product.id %}">
+                                                <!-- Rating (Yulduzcha orqali baholash) -->
+                                                <div class="mb-3">
+                                                    <label class="form-label">Baho bering:</label>
+                                                  
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="rating" id="rating-input" value="0">
+                                                        
+                                                        <div class="rating-container">
+                                                            <div class="rating">
+                                                                {% for i in "12345"|make_list %}
+                                                                    <span class="star" data-value="{{ i }}">★</span>
+                                                                {% endfor %}
+                                                            </div>
+                                                        </div>
+                                                        
+                                                </div>
+                                        
+                                                <div class="mb-3">
+                                                    <label for="comment" class="form-label">Fikringiz:{{product.id}}</label>
+                                                    <textarea class="form-control" name="text" id="comment" rows="3" placeholder="Izohingizni yozing..."></textarea>
+                                                </div>
+                                        
+                                                <button type="submit" class="btn btn-danger " name="review">Jo‘natish</button>
+                                            </form>
+                                            <!-- Toastr CSS -->
+                                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+                                    <!-- Toastr JS -->
+                                    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+                                    <script>
+                                        document.addEventListener("DOMContentLoaded", function() {
+                                            document.getElementById("reviewForm").addEventListener("submit", function(e) {
+                                                e.preventDefault();  // Sahifani yangilanishini oldini olamiz
+                                        
+                                                let formData = new FormData(this);  // Formadagi ma'lumotlarni olish
+                                                let product_id = this.dataset.productId;
+                                        
+                                                fetch(`/submit-review/${product_id}/`, {
+                                                    method: "POST",
+                                                    body: formData,
+                                                    headers: {
+                                                        "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value
+                                                    }
+                                                })
+                                                .then(response => response.json())
+                                                .then(data => {
+                                                    let messageDiv = document.getElementById("reviewMessage");
+                                                    messageDiv.innerHTML = `<div class="alert ${data.success ? 'alert-success' : 'alert-danger'}">${data.message}</div>`;
+                                                })
+                                                .catch(error => console.error("Xatolik yuz berdi:", error));
+                                            });
+                                        });
+                                        </script>
+                                        
+                                        </div>
+                                        
+                                        <!-- Foydalanuvchilar izohlari ko‘rinishi -->
+                                        <div class="container mt-4">
+                                            <h4>Foydalanuvchilar izohlari</h4>
+                                            <ul id="commentList" class="list-group">
+                                                <!-- Yangi izohlar shu joyga qo‘shiladi -->
+                                            </ul>
+                                        </div>
+                                        
+                               
+                                        <div class="row r-2 u-s-m-b-26 u-s-p-b-22">
+                                            <div class="col-lg-12">
+                                                <div class="your-rating-wrapper">
+                                      
+
+                                                    <style>
+                                                        .rating-container {
+                                                            text-align: center;
+                                                            margin-top: 10px;
+                                                        }
+                                                    
+                                                        .rating {
+                                                            display: inline-block;
+                                                            font-size: 30px;
+                                                            cursor: pointer;
+                                                            unicode-bidi: bidi-override;
+                                                            direction: ltr; /* Chapdan o'ngga tartiblash */
+                                                        }
+                                                    
+                                                        .star {
+                                                            color: #ddd; /* Bo'sh yulduzchalar rangi */
+                                                            display: inline-block;
+                                                            position: relative;
+                                                            width: 0em;
+                                                            transition: color 0.3s;
+                                                            margin-right: 50px;
+                                                        }
+                                                    
+                                                        .star:hover,
+                                                        .star:hover ~ .star,
+                                                        .star.active,
+                                                        .star.active ~ .star {
+                                                            color: orange; /* Tanlangan yulduzchalar rangi */
+                                                        }
+                                                    
+                                                        .submit-button {
+                                                            display: block;
+                                                            margin: 15px auto;
+                                                            padding: 10px 20px;
+                                                            background-color: orange;
+                                                            border: none;
+                                                            color: white;
+                                                            font-size: 16px;
+                                                            cursor: pointer;
+                                                            border-radius: 5px;
+                                                        }
+                                                    
+                                                        .submit-button:hover {
+                                                            background-color: darkorange;
+                                                        }
+                                                    
+                                                        .reviews {
+                                                            text-align: center;
+                                                            margin-top: 10px;
+                                                            font-weight: bold;
+                                                        }
+                                                    </style>
+                                                    
+                                                    <script>
+                                                        document.addEventListener('DOMContentLoaded', function() {
+                                                            const stars = document.querySelectorAll('.star');
+                                                            const ratingInput = document.getElementById('rating-input');
+                                                            const form = document.getElementById('rating-form');
+                                                    
+                                                            // Boshlang'ich holatda 5ta yulduzchani ko'rsatish
+                                                            stars.forEach(star => {
+                                                                star.style.display = 'inline-block';
+                                                            });
+                                                    
+                                                            stars.forEach(star => {
+                                                                star.addEventListener('click', function() {
+                                                                    const value = parseInt(this.getAttribute('data-value'));
+                                                                    ratingInput.value = value;
+                                                                    
+                                                                    // Barcha yulduzchalarni yangilash
+                                                                    stars.forEach(s => {
+                                                                        const sValue = parseInt(s.getAttribute('data-value'));
+                                                                        s.classList.toggle('active', sValue <= value);
+                                                                    });
+                                                                });
+                                                                
+                                                                // Sichqoncha yulduzcha ustiga kelganda effekt
+                                                                star.addEventListener('mouseover', function() {
+                                                                    const value = parseInt(this.getAttribute('data-value'));
+                                                                    
+                                                                    stars.forEach(s => {
+                                                                        const sValue = parseInt(s.getAttribute('data-value'));
+                                                                        s.style.color = sValue <= value ? 'orange' : '#ddd';
+                                                                    });
+                                                                });
+                                                                
+                                                                // Sichqoncha yulduzchadan chiqib ketganda effekt
+                                                                star.addEventListener('mouseout', function() {
+                                                                    const currentRating = parseInt(ratingInput.value);
+                                                                    
+                                                                    stars.forEach(s => {
+                                                                        const sValue = parseInt(s.getAttribute('data-value'));
+                                                                        s.style.color = (currentRating > 0 && sValue <= currentRating) ? 'orange' : '#ddd';
+                                                                    });
+                                                                });
+                                                            });
+                                                        });
+                                                    </script>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Get-Reviews -->
+                                        <div class="get-reviews u-s-p-b-22">
+                                            <!-- Review-Options -->
+                                            <div class="review-options u-s-m-b-16">
+                                                <div class="review-option-heading">
+                                                    <h6>Reviews
+                                                        <span> (15) </span>
+                                                    </h6>
+                                                </div>
+                                                <div class="review-option-box">
+                                                    <div class="select-box-wrapper">
+                                                        <label class="sr-only" for="review-sort">Review Sorter</label>
+                                                        <select class="select-box" id="review-sort">
+                                                            <option value="">Sort by: Best Rating</option>
+                                                            <option value="">Sort by: Worst Rating</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Review-Options /- -->
+                                            <!-- All-Reviews -->
+                                            <div class="reviewers">
+                                                {% for i  in comments %}
+                                                <div class="review-data">
+                                                    <div class="reviewer-name-and-date">
+                                                        <h6 class="reviewer-name">{{i.avg_ratings}}</h6>
+                                                        <h6 class="review-posted-date">{{i.created_at}}</h6>
+                                                    </div>
+                                                    <div class="reviewer-stars-title-body">
+                                                        <div class="reviewer-stars">
+                                                        
+                                                            <span class="review-title">{{i.title}}</span>
+                                                        </div>
+                                                        <p class="review-body">
+                                                            {{i.text}}
+                                                            
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                {% endfor %}
+                                                                                       
+                                            </div>
+                                            <!-- All-Reviews /- -->
+                                            <!-- Pagination-Review -->
+                                            <div class="pagination-review-area">
+                                                <div class="pagination-review-number">
+                                                    <ul>
+                                                        <li style="display: none">
+                                                            <a href="single-product.html" title="Previous">
+                                                                <i class="fas fa-angle-left"></i>
+                                                            </a>
+                                                        </li>
+                                                        <li class="active">
+                                                            <a href="single-product.html">1</a>
+                                                        </li>
+                                          
+                                                        <li>
+                                                            <a href="single-product.html" title="Next">
+                                                                <i class="fas fa-angle-right"></i>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            <!-- Pagination-Review /- -->
+                                        </div>
+                                        <!-- Get-Reviews /- -->
+                                    </div>
+                                </div>
+                                <!-- Reviews-Tab /- -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Detail-Tabs /- -->
+                <!-- Different-Product-Section -->
+                <div class="detail-different-product-section u-s-p-t-80">
+                    <!-- Similar-Products -->
+                    <section class="section-maker">
+                        <div class="container">
+                            <div class="sec-maker-header text-center">
+                                <h3 class="sec-maker-h3">Similar Products</h3>
+                            </div>
+                            <div class="slider-fouc">
+                                <div class="products-slider owl-carousel" data-item="4">
+                                    {% for i in last %}
+                                    <div class="item">
+                                        <div class="image-container">
+                                            <a class="item-img-wrapper-link" href="{% url 'shop:detail' i.id %}">
+                                                <img class="img-fluid" src="{{i.image.url}}" alt="Product">
+                                            </a>
+                                            <div class="item-action-behaviors">
+                                                <!-- <a class="item-quick-look" data-toggle="modal" href="#modal-{{i.id}}">Quick Look</a>
+                                                <a class="item-mail" href="javascript:void(0)">Mail</a> -->
+                                                <a class="item-addwishlist" href="{% url 'shop:add_to_wishlist_session' i.id%}">Add to Wishlist</a>
+                                                <!-- <a class="item-addCart" href="javascript:void(0)">Add to Cart</a> -->
+                                            </div>
+                                        </div>
+                                        <div class="item-content">
+                                            <div class="what-product-is">
+                                                <ul class="bread-crumb">
+                                                    <li class="has-separator">
+                                                        <a href="shop-v1-root-category.html">Men's</a>
+                                                    </li>
+                                                    <li class="has-separator">
+                                                        <a href="shop-v2-sub-category.html">Tops</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="shop-v3-sub-sub-category.html">Hoodies</a>
+                                                    </li>
+                                                </ul>
+                                                <h6 class="item-title">
+                                                    <a href="single-product.html">{{i.nomi}}</a>
+                                                </h6>
+                                                <div class="item-stars">
+                                                    <div class='star' title="0 out of 5 - based on 0 Reviews">
+                                                        <span style='width:0'></span>
+                                                    </div>
+                                                    <span>(0)</span>
+                                                </div>
+                                            </div>
+                                            <div class="price-template">
+                                                <div class="item-new-price">
+                                                    {{i.narxi | floatformat:0 |intcomma}}
+                                                </div>
+                                                <div class="item-old-price">
+                                                    $60.00
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tag new">
+                                            <span>NEW</span>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                                    <div class="modal fade" id="IshchiModal" tabindex="-1" aria-labelledby="IshchiModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="addJobModalLabel">Ishchi qo'shish</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Ism</th>
+                                        <th>Familiya</th>
+                                        <th>Telefon</th>
+                                        <th>Ish Turi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Ali</td>
+                                        <td>Valiyev</td>
+                                        <td>+998901234567</td>
+                                        <td>Dasturchi</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Vali</td>
+                                        <td>Aliyev</td>
+                                        <td>+998901234568</td>
+                                        <td>Dizayner</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Yopish</button>
+                                <button type="button" class="btn btn-primary">Saqlash</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    </section>
+                    <!-- Similar-Products /- -->
+                    <!-- Recently-View-Products  -->
+                    <section class="section-maker">
+                        <div class="container">
+                            <div class="sec-maker-header text-center">
+                                <h3 class="sec-maker-h3">Recently View</h3>
+                            </div>
+                            <div class="slider-fouc">
+                                <div class="products-slider owl-carousel" data-item="4">
+                                    <div class="item">
+                                        <div class="image-container">
+                                            <a class="item-img-wrapper-link" href="single-product.html">
+                                                <img class="img-fluid" src="images/product/product@3x.jpg" alt="Product">
+                                            </a>
+                                            <div class="item-action-behaviors">
+                                                <a class="item-quick-look" data-toggle="modal" href="#quick-view">Quick Look</a>
+                                                <a class="item-mail" href="javascript:void(0)">Mail</a>
+                                                <a class="item-addwishlist" href="javascript:void(0)">Add to Wishlist</a>
+                                                <a class="item-addCart" href="javascript:void(0)">Add to Cart</a>
+                                            </div>
+                                        </div>
+                                        <div class="item-content">
+                                            <div class="what-product-is">
+                                                <ul class="bread-crumb">
+                                                    <li class="has-separator">
+                                                        <a href="shop-v1-root-category.html">Men's</a>
+                                                    </li>
+                                                    <li class="has-separator">
+                                                        <a href="shop-v2-sub-category.html">Outwear</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="shop-v3-sub-sub-category.html">Jackets</a>
+                                                    </li>
+                                                </ul>
+                                                <h6 class="item-title">
+                                                    <a href="single-product.html">Maire Battlefield Jeep Men's Jacket</a>
+                                                </h6>
+                                                <div class="item-stars">
+                                                    <div class='star' title="0 out of 5 - based on 0 Reviews">
+                                                        <span style='width:0'></span>
+                                                    </div>
+                                                    <span>(0)</span>
+                                                </div>
+                                            </div>
+                                            <div class="price-template">
+                                                <div class="item-new-price">
+                                                    $55.00
+                                                </div>
+                                                <div class="item-old-price">
+                                                    $60.00
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tag hot">
+                                            <span>HOT</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <!-- Recently-View-Products /- -->
+                </div>
+                <!-- Different-Product-Section /- -->
+            </div>
+        </div>
+        <!-- Single-Product-Full-Width-Page /- -->
+        <!-- Footer -->
+
+        <!-- Footer /- -->
+        <!-- Dummy Selectbox -->
+        <div class="select-dummy-wrapper">
+            <select id="compute-select">
+                <option id="compute-option">All</option>
+            </select>
+        </div>
+        <!-- Dummy Selectbox /- -->
+        <!-- Responsive-Search -->
+        <div class="responsive-search-wrapper">
+            <button type="button" class="button ion ion-md-close" id="responsive-search-close-button"></button>
+            <div class="responsive-search-container">
+                <div class="container">
+                    <p>Start typing and press Enter to search</p>
+                    <form class="responsive-search-form">
+                        <label class="sr-only" for="search-text">Search</label>
+                        <input id="search-text" type="text" class="responsive-search-field" placeholder="PLEASE SEARCH">
+                        <i class="fas fa-search"></i>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Responsive-Search /- -->
+        <!-- Quick-view-Modal -->
+        <div id="quick-view" class="modal fade">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <button type="button" class="button dismiss-button ion ion-ios-close" data-dismiss="modal"></button>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <!-- Product-zoom-area -->
+                                <div class="zoom-area">
+                                    <img id="zoom-pro-quick-view" class="img-fluid" src="images/product/product@4x.jpg" data-zoom-image="images/product/product@4x.jpg" alt="Zoom Image">
+                                    <div id="gallery-quick-view" class="u-s-m-t-10">
+                                        <a class="active" data-image="images/product/product@4x.jpg" data-zoom-image="images/product/product@4x.jpg">
+                                            <img src="images/product/product@2x.jpg" alt="Product">
+                                        </a>
+                                        <a data-image="images/product/product@4x.jpg" data-zoom-image="images/product/product@4x.jpg">
+                                            <img src="images/product/product@2x.jpg" alt="Product">
+                                        </a>
+                                        <a data-image="images/product/product@4x.jpg" data-zoom-image="images/product/product@4x.jpg">
+                                            <img src="images/product/product@2x.jpg" alt="Product">
+                                        </a>
+                                        <a data-image="images/product/product@4x.jpg" data-zoom-image="images/product/product@4x.jpg">
+                                            <img src="images/product/product@2x.jpg" alt="Product">
+                                        </a>
+                                        <a data-image="images/product/product@4x.jpg" data-zoom-image="images/product/product@4x.jpg">
+                                            <img src="images/product/product@2x.jpg" alt="Product">
+                                        </a>
+                                        <a data-image="images/product/product@4x.jpg" data-zoom-image="images/product/product@4x.jpg">
+                                            <img src="images/product/product@2x.jpg" alt="Product">
+                                        </a>
+                                    </div>
+                                </div>
+                                <!-- Product-zoom-area /- -->
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <!-- Product-details -->
+                                <div class="all-information-wrapper">
+                                    <div class="section-1-title-breadcrumb-rating">
+                                        <div class="product-title">
+                                            <h1>
+                                                <a href="single-product.html">Casual Hoodie Full Cotton</a>
+                                            </h1>
+                                        </div>
+                                        <ul class="bread-crumb">
+                                            <li class="has-separator">
+                                                <a href="home.html">Home</a>
+                                            </li>
+                                            <li class="has-separator">
+                                                <a href="shop-v1-root-category.html">Men's Clothing</a>
+                                            </li>
+                                            <li class="has-separator">
+                                                <a href="shop-v2-sub-category.html">Tops</a>
+                                            </li>
+                                            <li class="is-marked">
+                                                <a href="shop-v3-sub-sub-category.html">Hoodies</a>
+                                            </li>
+                                        </ul>
+                                        <div class="product-rating">
+                                            <div class='star' title="4.5 out of 5 - based on 23 Reviews">
+                                                <span style='width:67px'></span>
+                                            </div>
+                                            <span>(23)</span>
+                                        </div>
+                                    </div>
+                                    <div class="section-2-short-description u-s-p-y-14">
+                                        <h6 class="information-heading u-s-m-b-8">Description:</h6>
+                                        <p>This hoodie is full cotton. It includes a muff sewn onto the lower front, and (usually) a drawstring to adjust the hood opening. Throughout the U.S., it is common for middle-school, high-school, and college students to wear this sweatshirts—with or without hoods—that display their respective school names or mascots across the chest, either as part of a uniform or personal preference.
+                                        </p>
+                                    </div>
+                                    <div class="section-3-price-original-discount u-s-p-y-14">
+                                        <div class="price">
+                                            <h4>$55.00</h4>
+                                        </div>
+                                        <div class="original-price">
+                                            <span>Original Price:</span>
+                                            <span>$60.00</span>
+                                        </div>
+                                        <div class="discount-price">
+                                            <span>Discount:</span>
+                                            <span>8%</span>
+                                        </div>
+                                        <div class="total-save">
+                                            <span>Save:</span>
+                                            <span>$5</span>
+                                        </div>
+                                    </div>
+                                    <div class="section-4-sku-information u-s-p-y-14">
+                                        <h6 class="information-heading u-s-m-b-8">Sku Information:</h6>
+                                        <div class="availability">
+                                            <span>Availability:</span>
+                                            <span>In Stock</span>
+                                        </div>
+                                        <div class="left">
+                                            <span>Only:</span>
+                                            <span>50 left</span>
+                                        </div>
+                                    </div>
+                                    <div class="section-5-product-variants u-s-p-y-14">
+                                        <h6 class="information-heading u-s-m-b-8">Product Variants:</h6>
+                                        <div class="color u-s-m-b-11">
+                                            <span>Available Color:</span>
+                                            <div class="color-variant select-box-wrapper">
+                                                <select class="select-box product-color">
+                                                    <option value="1">Heather Grey</option>
+                                                    <option value="3">Black</option>
+                                                    <option value="5">White</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="sizes u-s-m-b-11">
+                                            <span>Available Size:</span>
+                                            <div class="size-variant select-box-wrapper">
+                                                <select class="select-box product-size">
+                                                    <option value="">Male 2XL</option>
+                                                    <option value="">Male 3XL</option>
+                                                    <option value="">Kids 4</option>
+                                                    <option value="">Kids 6</option>
+                                                    <option value="">Kids 8</option>
+                                                    <option value="">Kids 10</option>
+                                                    <option value="">Kids 12</option>
+                                                    <option value="">Female Small</option>
+                                                    <option value="">Male Small</option>
+                                                    <option value="">Female Medium</option>
+                                                    <option value="">Male Medium</option>
+                                                    <option value="">Female Large</option>
+                                                    <option value="">Male Large</option>
+                                                    <option value="">Female XL</option>
+                                                    <option value="">Male XL</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="section-6-social-media-quantity-actions u-s-p-y-14">
+                                        <form action="#" class="post-form">
+                                            <div class="quick-social-media-wrapper u-s-m-b-22">
+                                                <span>Share:</span>
+                                                <ul class="social-media-list">
+                                                    <li>
+                                                        <a href="#">
+                                                            <i class="fab fa-facebook-f"></i>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#">
+                                                            <i class="fab fa-twitter"></i>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#">
+                                                            <i class="fab fa-google-plus-g"></i>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#">
+                                                            <i class="fas fa-rss"></i>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#">
+                                                            <i class="fab fa-pinterest"></i>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="quantity-wrapper u-s-m-b-22">
+                                                <span>Quantity:</span>
+                                                <div class="quantity">
+                                                    <input type="text" class="quantity-text-field" value="1">
+                                                    <a class="plus-a" data-max="1000">&#43;</a>
+                                                    <a class="minus-a" data-min="1">&#45;</a>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <button class="button button-outline-secondary" type="submit">Add to cart</button>
+                                                <button class="button button-outline-secondary far fa-heart u-s-m-l-6"></button>
+                                                <button class="button button-outline-secondary far fa-envelope u-s-m-l-6"></button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <!-- Product-details /- -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+        <!-- Quick-view-Modal /- -->
+    </div>
+    <!-- {% for i in last  %}
+    <div id="modal-{{i.id}}" class="modal fade" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <button type="button" class="button dismiss-button ion ion-ios-close" data-dismiss="modal"></button>
+                <div class="modal-body">
+                    <form action="{% url 'shop:add_cart' %}" method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                Rasmlarni yonma-yon joylashtirish uchun konteyner
+                                <div class="variant-label">Variantlar</div>
+                                <div class="image-container">
+                                    
+                                    {% for color, image_url in product.image_by_color.items%}
+                                    <div class="zoom-area">
+                                         "Variantlar" yozuvi
+
+                                        <img id="zoom-pro-quick-view" class="img-fluid product-image" 
+                                            src="{{ image_url  }}" 
+                                            srcset="{{ image_url  }} 1x, {{ image_url  }} 2x" 
+                                            data-zoom-image="{{ image_url  }}" 
+                                            alt="Zoom Image">
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <style>
+                                /* Rasmlarni yonma-yon joylashtirish uchun konteyner */
+                                .image-container {
+                                    display: flex; /* Flexbox yordamida yonma-yon joylashtirish */
+                                    flex-wrap: wrap; /* Rasmlarni qatorga sig'masa, yangi qatorga tushirish */
+                                    gap: 10px; /* Rasmlar orasidagi masofa */
+                                }
+                                    
+                                /* Har bir rasm uchun stil */
+                                .product-image {
+                                    border: 2px solid #ddd; /* Chegaralar qo'shish */
+                                    border-radius: 8px; /* Burchaklarni yumaloqlashtirish */
+                                    padding: 5px; /* Chegaralar va rasm orasidagi masofa */
+                                    width: 150px; /* Rasmning kengligi */
+                                    height: 150px; /* Rasmning balandligi */
+                                    object-fit: cover; /* Rasmni moslashtirish */
+                                }
+                            
+                                /* Sichqoncha ustiga kelganda chegaralar rangini o'zgartirish */
+                                .product-image:hover {
+                                    border-color: #007bff;
+                                }
+                                
+                                                    </style>
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <div class="all-information-wrapper">
+                                    <div class="section-1-title-breadcrumb-rating">
+                                        <div class="product-title">
+                                            <h1>
+                                                <a href="single-product.html">{{i.nomi}}</a>
+                                            </h1>
+                                        </div>
+                                        <ul class="bread-crumb">
+                                            <li class="has-separator">
+                                                <a href="home.html">Home</a>
+                                            </li>
+                                            <li class="has-separator">
+                                                <a href="shop-v1-root-category.html">Men's Clothing</a>
+                                            </li>
+                                            <li class="has-separator">
+                                                <a href="shop-v2-sub-category.html">Tops</a>
+                                            </li>
+                                            <li class="is-marked">
+                                                <a href="shop-v3-sub-sub-category.html">Hoodies</a>
+                                            </li>
+                                        </ul>
+                                        <div class="product-rating">
+                                            <div class='star' title="4.5 out of 5 - based on 23 Reviews">
+                                                <span style='width:67px'></span>
+                                            </div>
+                                            <span>(23)</span>
+                                        </div>
+                                    </div>
+                                    <div class="section-2-short-description u-s-p-y-14">
+                                        <h6 class="information-heading u-s-m-b-8">Description:</h6>
+                                        <p>
+                                            {{i.description}}
+                                        </p>
+                                    </div>
+                                    <div class="section-3-price-original-discount u-s-p-y-14">
+                                        <div class="price">
+                                            <h4>{{i.narxi|floatformat:0 |intcomma}} so'm</h4>
+                                            <input type="hidden" name="cartnarx" value="{{i.narxi}}">
+                                        </div>
+                                        <div class="original-price">
+                                            <span>Original Price:</span>
+                                            <span>$60.00</span>
+                                        </div>
+                                        <div class="discount-price">
+                                            <span>Discount:</span>
+                                            <span>8%</span>
+                                        </div>
+                                        <div class="total-save">
+                                            <span>Save:</span>
+                                            <span>$5</span>
+                                        </div>
+                                    </div>
+                                    <div class="section-4-sku-information u-s-p-y-14">
+                                        <h6 class="information-heading u-s-m-b-8">Sku Information:</h6>
+
+                                        {% if i.soni > 0 %}
+                                        <div class="availability">
+                                            <span>Availability:</span>
+                                            <span>In Stock</span>
+                                        </div>
+                                        <div class="left">
+                                            <span>Only:</span>
+                                            <span>{{i.soni}} left</span>
+                                        </div>
+                                        {% else %}
+                                        <div class="availability">
+                                            <span>Availability:</span>
+                                            <span>Tugadi</span>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <input type="hidden" name="product_id" value="{{ i.id }}">
+                                    <div class="section-5-product-variants u-s-p-y-14">
+                                            <h6 class="information-heading u-s-m-b-8">Product Variants:</h6>
+                                            <div class="color u-s-m-b-11">
+                                                <label for="available-color">Available Color:</label>
+                                                <select id="available-color" name="color">
+                                                {% for color in product.colors %}
+                                                    <option value="{{color}}">{{color}}</option>
+                                                {% endfor %}
+                                                </select>
+                                                
+                                            </div>
+                                            {% for i in i.variants.all %}
+                                            <input type="hidden" name="variant_id" value="{{i.id}}" id="">
+                                            {% endfor %}
+                                        <div class="sizes u-s-m-b-11">
+                                            <label for="available-size">Available Size:</label>
+                                            <select id="available-size" name="size">
+                                                {% for size in product.sizes %}
+                                                    <option value="{{ size }}">{{ size }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <input type="hidden" name="product_name" value="{{ i.nomi }}">
+                                            <input type="hidden" id="variant-image" name="variant_image" value="{% for color, image_url in i.image_by_color.items %}{% if forloop.first %}{{ image_url }}{% endif %}{% endfor %}">                                        </div>
+                                    </div>
+                                    <div class="section-6-social-media-quantity-actions u-s-p-y-14">
+                                            <div class="quick-social-media-wrapper u-s-m-b-22">
+                                                <span>Share:</span>
+                                                <ul class="social-media-list">
+                                                    <li>
+                                                        <a href="#">
+                                                            <i class="fab fa-facebook-f"></i>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#">
+                                                            <i class="fab fa-twitter"></i>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#">
+                                                            <i class="fab fa-google-plus-g"></i>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#">
+                                                            <i class="fas fa-rss"></i>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#">
+                                                            <i class="fab fa-pinterest"></i>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="quantity-wrapper u-s-m-b-22">
+                                                <span>Quantity:</span>
+                                                <div class="quantity">
+                                                    <input type="text" name="quantity" class="quantity-text-field" value="1">
+                                                    <a class="plus-a"  data-max="1000">&#43;</a>
+                                                    <a class="minus-a" data-min="1">&#45;</a>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <button class="button button-outline-secondary" name="add_to_cart" type="submit">Add to cart</button>
+                                                <button class="button button-outline-secondary far fa-heart u-s-m-l-6"></button>
+                                                <button class="button button-outline-secondary far fa-envelope u-s-m-l-6"></button>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endfor %} -->
+
+    <!-- app /- -->
+    <!--[if lte IE 9]>
+    <div class="app-issue">
+        <div class="vertical-center">
+            <div class="text-center">
+                <h1>You are using an outdated browser.</h1>
+                <span>This web app is not compatible with following browser. Please upgrade your browser to improve your security and experience.</span>
+            </div>
+        </div>
+    </div>
+    <style> #app {
+        display: none;
+    } </style>
+    <![endif]-->
+    <!-- NoScript -->
+
+    {% endblock %}
+

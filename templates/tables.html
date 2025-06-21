@@ -1,0 +1,350 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+<style>
+    .badge {
+        font-size: 14px;
+        padding: 5px 10px;
+        border-radius: 5px;
+    }
+    .badge-active { background-color: #28a745; }
+    .badge-pending { background-color: #ffc107; color: black; }
+    .badge-inactive { background-color: #dc3545; }
+    .badge-tag {
+        background-color: white;
+        color: black;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-weight: bold;
+    }
+    .btn-action {
+        padding: 6px 10px;
+        font-size: 14px;
+        transition: 0.3s ease-in-out;
+    }
+    .btn-action:hover {
+        opacity: 0.7;
+    }
+    .editable {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.editable:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.editable:focus {
+  background-color: #fff;
+  outline: 1px solid #dee2e6;
+  border-radius: 4px;
+}
+
+.toast {
+  z-index: 9999;
+}
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
+
+.alert.show {
+    animation: slideIn 0.5s ease-out;
+}
+
+.alert.hide {
+    animation: fadeOut 0.5s ease-out forwards;
+}
+
+</style>
+    <div id="message-box" class="alert alert-success alert-dismissible fade show" role="alert" style="display: none; position: fixed; top: 20px; right: 20px; z-index: 1050; min-width: 300px;">
+        <strong id="message-text"></strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Yopish"></button>
+        </div>
+    {% endfor %}
+    {% endif %}
+    <div class="container-fluid py-4">
+        <!-- Mahsulotlar Jadvali -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card mb-4">
+                    <div class="card-header pb-0">
+                        <h6>Mahsulotlar ro'yxati</h6>
+                    </div>
+                    <form method="get" action="" class="m-order u-s-m-b-30 mb-1">
+                        <select name="filter" id="viloyat" onchange="this.form.submit()" class="select-box select-box--primary-style">
+                            <option value="all" {% if request.GET.filter == "all" %}selected{% endif %}>Hammasi</option>
+                            <option value="Arzon" {% if request.GET.filter == "Arzon" %}selected{% endif %}>Arzon</option>
+                            <option value="Qimmat" {% if request.GET.filter == "Qimmat" %}selected{% endif %}>Qimmat</option>
+                            <option value="Kop" {% if request.GET.filter == "Kop" %}selected{% endif %}>Soni ko'proq</option>
+                            <option value="sotuv" {% if request.GET.filter == "sotuv" %}selected{% endif %}>Ko'proq sotuv</option>
+                        </select>
+                    </form>   
+                    
+                    <div class="card-body px-0 pt-0 pb-2">
+                        <div class="table-responsive p-0">
+                            <table class="table table-bordered table-hover">
+                                <thead class="table-dark white">
+                                    <tr>
+                                        <th class="text-uppercase text-xxs font-weight-bolder opacity-7">Nomi</th>
+                                        <th class="text-uppercase text-xxs font-weight-bolder opacity-7 ps-2">Narxi</th>
+                                        <th class="text-uppercase text-xxs font-weight-bolder opacity-7 ps-2">Soni</th>
+                                        <th class="text-uppercase text-xxs font-weight-bolder text-center opacity-7 ps-2">Variantlar</th>
+                                        <th class="text-uppercase text-xxs font-weight-bolder text-center opacity-7 ps-2">Kategoriya</th>
+                                        <th class="text-uppercase text-xxs font-weight-bolder text-center opacity-7 ps-2">Sotuvlar</th>
+                                        <th class="text-uppercase text-xxs font-weight-bolder text-center opacity-7 w-auto">Ishlab chiqarish</th>
+                                        <th class="text-uppercase text-xxs font-weight-bolder text-center opacity-7 w-auto">Amal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for product in products %}
+                                    <tr id="product-{{ product.id }}">
+                                      <td class="editable" data-id="{{ product.id }}" data-field="nomi" contenteditable="true">
+                                        {{ product.nomi }}
+                                      </td>
+                                      <td class="editable" data-id="{{ product.id }}" data-field="narxi" contenteditable="true">
+                                        {{ product.narxi|floatformat:0|intcomma }}
+                                      </td>
+                                      <td class="editable" data-id="{{ product.id }}" data-field="soni" contenteditable="true">
+                                        {{ product.soni }}
+                                      </td>
+                                      <td class="editable" data-id="{{ product.id }}" data-field="variants">
+                                        {{ product.variants.count }}
+                                      </td>
+                                      <td class="editable" data-id="{{ product.id }}" data-field="category">
+                                        {{ product.category }}
+                                      </td>
+                                      <td class="editable" data-id="{{ product.id }}" data-field="sales">
+                                        {{ product.sales }}
+                                      </td>
+                                      <td class="editable" data-id="{{ product.id }}" data-field="produce">
+                                        {{ product.produce }}
+                                      </td>
+                                      <td>
+                                        <div class="d-flex">
+                                          <form action="{% url 'main:delete_product' product.id %}" method="post" class="delete-form">
+                                            {% csrf_token %}
+                                            <button type="button" class="btn btn-link text-danger text-sm font-weight-bold mb-0"
+                                                    onclick="confirmDelete('{{ product.id }}', '{{ product.nomi }}')">
+                                              O'chirish
+                                            </button>
+                                          </form>
+                                            <i class="fa fa-eye mt-3" data-bs-toggle="modal" data-bs-target="#ProducctModal{{ product.id }}" style="cursor: pointer;"></i>
+                                        </div>
+                                      </td>
+                                    </tr>
+                                    <div class="modal fade" id="ProducctModal{{ product.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title m-4">{{ product.nomi }}</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body text-center">
+                                                    <img src="{{ product.image.url }}" class="img-fluid" alt="{{ product.nomi }}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    {% endfor %}
+                                  </tbody>
+                    
+                            </table>
+                            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                            <script>
+                                    $(document).ready(function(){
+                                    $(".editable").on("blur", function(){
+                                        var field = $(this).data("field");
+                                        var id = $(this).data("id");
+                                        var value = $(this).text().trim();
+
+                                        if (!id || !field) {
+                                            showMessage("❌ Xatolik: ID yoki maydon aniqlanmadi!", "danger");
+                                            return;
+                                        }
+
+                                        $.ajax({
+                                            url: `/update-product/${id}/`,
+                                            type: "POST",
+                                            data: {
+                                                'field': field,
+                                                'value': value,
+                                                'csrfmiddlewaretoken': '{{ csrf_token }}'
+                                            },
+                                            success: function(response){
+                                                showMessage("✅ Ma'lumot muvaffaqiyatli yangilandi!", "success");
+                                            },
+                                            error: function(){
+                                                showMessage("❌ Xatolik yuz berdi. Qayta urinib ko‘ring!", "danger");
+                                            }
+                                        });
+                                    });
+
+                                        function showMessage(message, type) {
+                                            var messageBox = $("#message-box");
+                                            $("#message-text").html(message);
+
+                                            messageBox.removeClass().addClass("alert alert-" + type + " alert-dismissible fade show").fadeIn();
+
+                                            setTimeout(function() {
+                                                messageBox.addClass("hide");
+                                                setTimeout(function() {
+                                                    messageBox.fadeOut();
+                                                }, 500);
+                                            }, 3000);
+                                        }
+                                    });
+                            </script>
+
+                            <!-- Delete Confirmation Modal -->
+                            <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteModalLabel">Mahsulotni o'chirish</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                    <p id="deleteMessage"></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor qilish</button>
+                                    <form id="confirmDeleteForm" method="POST" action="">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger">O'chirish</button>
+                                    </form>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                            
+                            <script>
+                                // O'chirish funksiyasi
+                                function confirmDelete(productId, productName) {
+                                    const deleteForm = document.getElementById('confirmDeleteForm');
+                                    const deleteMessage = document.getElementById('deleteMessage');
+                                    
+                                    deleteMessage.textContent = `"${productName}" mahsulotini rostdan ham o'chirmoqchimisiz?`;
+                                    deleteForm.action = `/products/delete/${productId}/`;
+                                    
+                                    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+                                    modal.show();
+                                }
+                                
+                                // Toast bildirishnomalari
+                                function showToast(message, type) {
+                                    const toast = document.createElement('div');
+                                    toast.className = `toast align-items-center text-white bg-${type} border-0 position-fixed bottom-0 end-0 m-3`;
+                                    toast.setAttribute('role', 'alert');
+                                    toast.setAttribute('aria-live', 'assertive');
+                                    toast.setAttribute('aria-atomic', 'true');
+                                    
+                                    toast.innerHTML = `
+                                    <div class="d-flex">
+                                        <div class="toast-body">
+                                        ${message}
+                                        </div>
+                                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                                    </div>
+                                    `;
+                                    
+                                    document.body.appendChild(toast);
+                                    const bsToast = new bootstrap.Toast(toast);
+                                    bsToast.show();
+                                    
+                                    setTimeout(() => {
+                                        toast.remove();
+                                    }, 3000);
+                                }
+                                </script>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Variantlar Jadvali -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card mb-4">
+                    <div class="card-header pb-0">
+                        <h6>Variantlar ro'yxati</h6>
+                    </div>
+                    <div class="card-body px-0 pt-0 pb-2">
+                        <div class="table-responsive p-0">
+                            <table class="table align-items-center mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nomi</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Narxi</th>
+                                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Soni</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for variant in unique_variants %}
+                                    <tr>
+                                        <td>
+                                            <div class="modal fade" id="variantModal{{ variant.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title m-4">{{ variant.product.nomi }}</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body text-center">
+                                                            <img src="{{ variant.image.url }}" class="img-fluid" alt="{{ variant.nomi }}">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex px-2 py-1">
+                                                <div>
+                                                    <img src="{{ variant.image.url }}" class="avatar avatar-sm me-3" alt="{{ variant.product.nomi }}" data-bs-toggle="modal" data-bs-target="#variantModal{{ variant.id }}" style="cursor: pointer;">
+                                                </div>
+                                                <div class="d-flex flex-column justify-content-center">
+                                                    <h6 class="mb-0 text-sm">{{ variant.product.nomi }}</h6>
+                                                    <p class="text-xs text-secondary mb-0">{{ variant.color }}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <h6 class="text-xs font-weight-bold mb-0">{{ variant.price | floatformat:0 | intcomma }} so'm</h6>
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            <span class="text-secondary text-xs font-weight-bold">{{ variant.stock }}</span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

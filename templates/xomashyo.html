@@ -1,0 +1,378 @@
+{% load humanize %}
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xomashyo Qabuli | Billing</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #1cc88a;
+            --dark-color: #5a5c69;
+            --light-color: #f8f9fc;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fc;
+        }
+
+        .sidebar {
+            background: linear-gradient(180deg, var(--primary-color) 10%, #224abe 100%);
+            min-height: 100vh;
+        }
+
+        .card {
+            border: none;
+            border-radius: 0.35rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+
+        .card-header {
+            background-color: #f8f9fc;
+            border-bottom: 1px solid #e3e6f0;
+        }
+
+        .bg-primary {
+            background-color: var(--primary-color) !important;
+        }
+
+        .bg-success {
+            background-color: var(--secondary-color) !important;
+        }
+
+        .stat-card {
+            border-left: 0.25rem solid var(--primary-color);
+        }
+
+        .stat-card.success {
+            border-left-color: var(--secondary-color);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .nav-pills .nav-link.active {
+            background-color: var(--primary-color);
+        }
+
+        .material-input {
+            transition: all 0.3s;
+        }
+
+        .material-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        }
+    </style>
+
+    <div class="container-fluid">
+        <div class="row">
+
+            <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4 py-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Xomashyo Qabuli</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-printer"></i> Chop etish
+                            </button>
+                            <a href="{% url 'xomashyo:xomashyo_pdf' %}">
+                                <button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-download">Yuklab olish</i></button>
+                            </a>
+                            <a href="{% url 'xomashyo:xomashyo_harakat_pdf' %}">
+                                <button type="button" class="btn btn-sm btn-outline-secondary"><i class="bi bi-download">Harakatlarni yuklab olish</i></button>
+                            </a>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-primary">
+                            <i class="bi bi-plus-circle"></i> Yangi qabul
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="row mb-4">
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card stat-card h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                            Bugungi qabul</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{bugungi_qabul}} ta</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="bi bi-box-seam fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card stat-card h-100 py-2 success">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                            Oylik qabul</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{oylik_qabul}} ta</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="bi bi-calendar-month fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card stat-card h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                            Qayrarishlar</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{oylik_qaytarish}} ta</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="bi bi-hourglass-split fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card stat-card h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                            Umumiy qiymati</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{sum_price|human_format}} so'm</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="bi bi-currency-exchange fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex grid gap-4 mb-4 ">
+                    <!-- New Material Acceptance Form -->
+                    <div class="card mb-4 col-md-6 ">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Yangi xomashyo qabuli</h6>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" action="{% url 'xomashyo:xomashyo_qabul' %}">
+                                {% csrf_token %}
+                                <div class="row mb-3">
+
+                                    <div class="col-md-6">
+                                        <label for="materialType" class="form-label">Nomi</label>
+                                        <select name="name" class="form-select material-input" id="materialType" required>
+                                            <option selected disabled value="">Tanlang...</option>
+                                            {% for i in xomashyos %}
+                                            <option  value="{{i.id}}">{{i.nomi}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <label for="quantity" class="form-label">Miqdori</label>
+                                        <input type="number" name="quantity" class="form-control material-input" id="quantity" required>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label for="price" class="form-label">Narxi (so'm)</label>
+                                        <input type="number" name="price" class="form-control material-input" id="price" required>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="supplier" class="form-label">Yetkazib beruvchi</label>
+                                        <select name="deliver" id="">
+                                            <option value="">Yetkazib bruvchi</option>
+                                            {% for i in yetkazib_beruvchilar %}
+                                            <option  value="{{i.id}}">{{i.nomi}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <button type="submit" name="kirim_btn" class="btn btn-primary">
+                                    <i class="bi bi-check-circle me-1"></i> Qabul qilish
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- New Material  Form -->
+                    <div class="card mb-4 col-md-6">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Yangi xomashyo qo'shish</h6>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" action="{% url 'xomashyo:xomashyo_qabul' %}">
+                                {% csrf_token %}
+                                <div class="row mb-3">
+
+                                    <div class="col-md-6">
+                                        <label for="materialType" class="form-label">Turi</label>
+                                        <input type="text" name="name" class="form-control material-input" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="price" class="form-label">Minimal midor </label>
+                                        <input type="number" name="min_quantity" class="form-control material-input" id="price" required>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <label for="quantity" class="form-label">Miqdori</label>
+                                        <input type="number" name="quantity" class="form-control material-input" id="quantity" required>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label for="price" class="form-label">Narxi (so'm)</label>
+                                        <input type="number" name="price" class="form-control material-input" id="price" required>
+                                    </div>
+
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <select name="deliver" class="form-select material-input" id="" required>
+                                            <option value="">Yetkazib bruvchi</option>
+                                            {% for i in yetkazib_beruvchilar %}
+                                            <option  value="{{i.id}}">{{i.nomi}}</option>
+                                            {% endfor %}
+                                        </select>
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        <select name="holat" class="form-select material-input" id="" required>
+                                            <option value="">Holati</option>
+                                            <option value="{{active}}">Faol</option>
+                                            <option value="{{deactive}}">Nofaol</option>
+                                        </select>
+
+                                    </div>
+
+                                </div>
+
+                                <button type="submit" name="new_btn" class="btn btn-primary">
+                                    <i class="bi bi-check-circle me-1"></i> Qabul qilish
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Materials List -->
+                <div class="card">
+                    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold text-primary">Qabul qilingan xomashyolar</h6>
+                        <div class="input-group" style="width: 300px;">
+                            <input type="text" class="form-control" placeholder="Qidirish...">
+                            <button class="btn btn-outline-secondary" type="button">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Xomashyo nomi</th>
+                                        <th>Turi</th>
+                                        <th>Miqdori</th>
+                                        <th>Narxi</th>
+                                        <th>Yetkazib beruvchi</th>
+                                        <th>Sana</th>
+                                        <th>Holati</th>
+                                        <th>Amallar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for i in xomashyos %}
+                                    <tr>
+                                        <td>{{i.id}}</td>
+                                        <td>{{i.nomi}}</td>
+                                        <td></td>
+                                        <td>{{i.miqdori}} {{i.olchov_birligi}}</td>
+                                        <td>{{i.narxi|floatformat:0|intcomma}} so'm</td>
+                                        <td>{{i.yetkazib_beruvchi.nomi}}</td>
+                                        <td>{{i.qabul_qilingan_sana}}</td>
+                                        <td><span class="badge bg-success">{{i.holati}}</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary me-1">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-warning">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-end mt-3">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Oldingi</a>
+                                </li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">Keyingi</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Simple form validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const requiredFields = this.querySelectorAll('[required]');
+            let isValid = true;
+
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+                alert('Iltimos, barcha majburiy maydonlarni to\'ldiring!');
+            }
+        });
+
+        // Remove invalid class when user starts typing
+        document.querySelectorAll('.material-input').forEach(input => {
+            input.addEventListener('input', function() {
+                if (this.value.trim()) {
+                    this.classList.remove('is-invalid');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

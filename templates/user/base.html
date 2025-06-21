@@ -1,0 +1,58 @@
+<nav class="bottom-nav">
+    <a href="{% url 'userapp:user_home' %}" class="nav-item active">
+        <span class="nav-icon">🏠</span>
+        <span>Bosh sahifa</span>
+    </a>
+    <a href="#" class="nav-item">
+        <span class="nav-icon">📊</span>
+        <span>Statistika</span>
+    </a>
+    <a href="{% url 'main:ish_request_create' %}" class="nav-item">
+        <span class="nav-icon">📝</span>
+        <span>Ish qo'shish</span>
+    </a>
+    <a href="#" class="nav-item">
+        <span class="nav-icon">⚙️</span>
+        <span>Sozlamalar</span>
+    </a>
+</nav>
+<style>
+    .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--card-bg);
+        display: flex;
+        justify-content: space-around;
+        padding: 10px 0 9px 0;
+        box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.34);
+        z-index: 50;
+        border-top: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.83rem;
+        transition: color 0.16s;
+        min-width: 60px;
+        gap: 1px;
+    }
+
+    .nav-item.active {
+        color: var(--primary);
+    }
+
+    .nav-item:hover {
+        color: var(--text-light);
+    }
+
+    .nav-icon {
+        font-size: 1.16rem;
+        margin-bottom: 1px;
+    }
+</style>

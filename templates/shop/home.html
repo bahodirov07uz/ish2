@@ -1,0 +1,705 @@
+{% extends 'shop/base2.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+{% load custom_filters%}
+<!-- app -->
+
+    <!-- Header -->
+
+    <div class="default-height ph-item">
+        <div class="slider-main owl-carousel">
+            <div class="bg-image one">
+                <div class="slide-content slide-animation">
+                    <h1>Casual Clothing</h1>
+                    <h2>lifestyle / clothing / hype</h2>
+                </div>
+            </div>
+            <div class="bg-image two">
+                <div class="slide-content-2 slide-animation">
+                    <h2 class="slide-2-h2-a">Hiking</h2>
+                    <h2 class="slide-2-h2-b">Collection</h2>
+                    <h1>2018</h1>
+                </div>
+            </div>
+            <div class="bg-image three">
+                <div class="slide-content slide-animation">
+                    <h1>Tech
+                        <span style="color:#333">Deals</span>
+                    </h1>
+                    <h2 style="color:#333"># shopping</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Banner-Layer /- -->
+    <!-- Men-Clothing -->
+    <section class="section-maker">
+        <div class="container mt-3">
+            <div class="sec-maker-header text-center">
+                <h3 class="sec-maker-h3">TAVSIYA ETAMIZ</h3>
+
+            </div>
+            <div class="wrapper-content">
+                <div class="outer-area-tab">
+                    <div class="tab-content">
+                        <div class="tab-pane active show fade" >
+                            <div class="slider-fouc">
+                                <div class="products-slider owl-carousel" data-item="4">
+                                    {% for i in products %}
+                                    <div class="item">
+                                        <div class="image-container">
+                                            <a class="item-img-wrapper-link" href="{% url 'shop:detail' i.id%}">
+                                                <img class="img-fluid" src="{{i.image.url}}" alt="Product">
+                                            </a>
+                                            <div class="item-action-behaviors">
+                                                <a class="item-quick-look" data-toggle="modal" href="#modal-{{i.id}}">Quick Look
+                                                </a>
+                                                <a class="item-mail" href="javascript:void(0)">Mail</a>
+                                                <a class="item-addwishlist" href="{% url 'shop:add_to_wishlist_session' i.id%}">❤️ Add to Wishlist</a>
+                                            </div>
+                                        </div>
+                                        <div class="item-content">
+                                            <div class="what-product-is">
+                                                <ul class="bread-crumb">
+                                                    {% for o in i.tags.all %}
+                                                    <li class="has-separator">
+                                                        <a href="shop-v1-root-category.html">{{o.name}}</a>
+                                                    </li>
+                                                    {% endfor %}
+                                                    
+                                                </ul>
+                                                <h6 class="item-title">
+                                                    <a href="{% url 'shop:detail' i.id%}">{{i.nomi}}</a>
+                                                    <p>{{i.avg_ratings}}</p>
+                                                </h6>
+                                                <div class="item-stars">
+                                                    <div class='star' title="{{avg_ratings|dict_get:i.id|floatformat:1}} out of 5 - based on 0 Reviews">
+                                                        <span style='width:{{avg_ratings|dict_get:i.id|floatformat:1|mul:15}}px'></span>
+                                                    </div>
+                                                    <span>({{avg_ratings|dict_get:i.id|floatformat:1}})</span>
+                                                </div>
+                                            </div>
+                                            <div class="price-template">
+                                                <div class="item-new-price">
+                                                    {{i.narxi|intcomma}} so'm
+                                                </div>
+                                                <div class="item-old-price">
+                                                    </div>
+                                            </div>
+                                        </div>
+                                        {% if i.is_new %}
+                                        <div class="tag new">
+                                            <span>yangi</span>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    {% endfor %}
+                                    
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Men-Clothing-Timing-Section -->
+    <!-- <section class="section-maker">
+        <div class="container">
+            <div class="sec-maker-header text-center">
+                <span class="sec-maker-span-text">Aksiyalar</span>
+                <h3 class="sec-maker-h3 u-s-m-b-22">Chegirmali mahsulotlar</h3>
+                <span class="sec-maker-span-text">Ends in</span>
+                <div class="section-timing-wrapper dynamic">
+                    <span class="fictitious-seconds" style="display:none;">18000</span>
+                    <div class="section-box-wrapper box-days">
+                        <div class="section-box">
+                            <span class="section-key">120</span>
+                            <span class="section-value">Days</span>
+                        </div>
+                    </div>
+                    <div class="section-box-wrapper box-hrs">
+                        <div class="section-box">
+                            <span class="section-key">54</span>
+                            <span class="section-value">HRS</span>
+                        </div>
+                    </div>
+                    <div class="section-box-wrapper box-mins">
+                        <div class="section-box">
+                            <span class="section-key">3</span>
+                            <span class="section-value">MINS</span>
+                        </div>
+                    </div>
+                    <div class="section-box-wrapper box-secs">
+                        <div class="section-box">
+                            <span class="section-key">32</span>
+                            <span class="section-value">SEC</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slider-fouc">
+                <div class="products-slider owl-carousel" data-item="4">
+                    <div class="item">
+                        <div class="image-container">
+                            <a class="item-img-wrapper-link" href="single-product.html">
+                                <img class="img-fluid" src="images/product/product@3x.jpg" alt="Product">
+                            </a>
+                            <div class="item-action-behaviors">
+                                <a class="item-quick-look" data-toggle="modal" href="#quick-view">Quick Look</a>
+                                <a class="item-mail" href="javascript:void(0)">Mail</a>
+                                <a class="item-addwishlist" href="javascript:void(0)">Add to Wishlist</a>
+                                <a class="item-addCart" href="javascript:void(0)">Add to Cart</a>
+                            </div>
+                        </div>
+                        <div class="item-content">
+                            <div class="what-product-is">
+                                <ul class="bread-crumb">
+                                    <li class="has-separator">
+                                        <a href="shop-v1-root-category.html">Men's</a>
+                                    </li>
+                                    <li class="has-separator">
+                                        <a href="shop-v2-sub-category.html">Outwear</a>
+                                    </li>
+                                    <li>
+                                        <a href="shop-v3-sub-sub-category.html">Jackets</a>
+                                    </li>
+                                </ul>
+                                <h6 class="item-title">
+                                    <a href="single-product.html">Maire Battlefield Jeep Men's Jacket</a>
+                                </h6>
+                                <div class="item-stars">
+                                    <div class='star' title="0 out of 5 - based on 0 Reviews">
+                                        <span style='width:0'></span>
+                                    </div>
+                                    <span>(0)</span>
+                                </div>
+                            </div>
+                            <div class="price-template">
+                                <div class="item-new-price">
+                                    $55.00
+                                </div>
+                                <div class="item-old-price">
+                                    $60.00
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tag hot">
+                            <span>HOT</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section> -->
+
+    <!-- Banner-Image & View-more -->
+    <div class="banner-image-view-more">
+        <div class="container">
+            <div class="image-banner u-s-m-y-40">
+                <a href="shop-v1-root-category.html" class="mx-auto banner-hover effect-dark-opacity">
+                    <img class="img-fluid" src="{% static 'images/banners/ban-men.jpg'%}" alt="Banner Image">
+                </a>
+            </div>
+            <div class="redirect-link-wrapper text-center u-s-p-t-25 u-s-p-b-80">
+                <a class="redirect-link" href="">
+                    <span>View more on this category</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- Banner-Image & View-more /- -->
+    <!-- Men-Clothing /- -->
+    <!-- Women-Clothing -->
+    <section class="section-maker">
+        <div class="container">
+            <div class="sec-maker-header text-center">
+                <a href=""><h3 class="sec-maker-h3">KROSSOVKALAR</h3></a>
+                <ul class="nav tab-nav-style-1-a justify-content-center">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#women-latest-products">So'nggi mahsulotlar </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#women-best-selling-products">Katta savdo </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#women-top-rating-products">Top Reyting</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#women-featured-products">Tez orada</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="wrapper-content">
+                <div class="outer-area-tab">
+                    <div class="tab-content">
+                        <div class="tab-pane active show fade" id="women-latest-products">
+                            <div class="slider-fouc grid">
+                                {% for i in products %}
+                                <div class="item col-lg-3 col-md-4 col-sm-4" >
+                                    <div class="image-container">
+                                        <a class="item-img-wrapper-link" href="{% url 'shop:detail' i.id%}">
+                                            <img class="img-fluid" src="{{i.image.url}}" alt="Product">
+                                        </a>
+                                        <div class="item-action-behaviors  u-d-none-lg">
+                                            <a class="item-quick-look" data-toggle="modal" href="#modal-{{i.id}}">Quick Look
+                                            </a>
+                                            <a class="item-mail" href="javascript:void(0)">Mail</a>
+                                            <a class="item-addwishlist" href="{% url 'shop:add_to_wishlist_session' i.id%}">❤️ Add to Wishlist</a>
+                                        </div>
+                                    </div>
+                                    <div class="item-content">
+                                        <div class="what-product-is">
+                                            <ul class="bread-crumb">
+                                                {% for o in i.tags.all %}
+                                                <li class="has-separator">
+                                                    <a href="shop-v1-root-category.html">{{o.name}}</a>
+                                                </li>
+                                                {% endfor %}
+                                                
+                                            </ul>
+                                            <h6 class="item-title">
+                                                <a href="{% url 'shop:detail' i.id%}">{{i.nomi |truncatechars:29}}</a>
+                                            </h6>
+                                            <div class="item-stars">
+                                                <div class="item-stars">
+                                                    <div class='star' title="{{avg_ratings|dict_get:i.id|floatformat:1}} out of 5 - based on 0 Reviews">
+                                                        <span style='width:{{avg_ratings|dict_get:i.id|floatformat:1|mul:15}}px'></span>
+                                                    </div>
+                                                    <span>({{avg_ratings|dict_get:i.id|floatformat:1}})</span>
+                                                </div>                                               
+                                                <span>{{i.reviews.count}} ta izoh</span>
+                                            </div>
+
+                                        </div>
+                                        <div class="price-template ">
+                                            <div class="item-new-price ml">
+                                                <p class="price">{{i.narxi|floatformat:0|intcomma}}<span> so'm</span></p>
+                                                
+                                            </div>
+                                           
+                                        </div>
+                                    </div>
+                                    {% if i.is_new %}
+                                    <div class="tag new">
+                                        <span>yangi</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <style>.slider-fouc.grid {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 1px; 
+            }
+            
+            .slider-fouc.grid .item {
+                flex: 1 1 calc(20% - 20px); 
+                box-sizing: border-box;
+            }
+            
+            /* Planshetlar uchun */
+            @media (max-width: 991px) {
+                .slider-fouc.grid .item {
+                    flex: 1 1 calc(33.33% - 20px);
+                }
+            }
+            
+            /* Mobil qurilmalar uchun */
+            @media (max-width: 767px) {
+                .slider-fouc.grid .item {
+                    flex: 1 1 calc(40% - 20px);
+                     /* Har bir qatorda 2 ta mahsulot */
+                }
+                .item-img-wrapper-link{
+                    width: 100%;               
+                }
+                .img-fluid{
+                    width: 700px;
+                    height: auto;
+                }     
+                         
+                .image-container {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    height: auto; /* O‘zingizga kerakli o‘lchamni qo‘ying */
+                    overflow: hidden;
+                    width: 100%;
+                }
+                .item{
+                    border-radius: 10px;
+                }
+            }    
+</style>
+
+            <div class="redirect-link-wrapper text-center u-s-p-t-25 u-s-p-b-80">
+                <a class="redirect-link" href="store-directory.html">
+                    <span>View more on this category</span>
+                </a>
+            </div>
+        </div>
+    </section> 
+    <!-- Women-Clothing /- -->
+
+
+    <!-- Continue-Link -->
+    <div class="continue-link-wrapper u-s-p-b-80">
+        <a class="continue-link" href="store-directory.html" title="View all products on site">
+            <i class="ion ion-ios-more"></i>
+        </a>
+    </div>
+    <!-- Continue-Link /- -->
+    <!-- Brand-Slider -->
+    <div class="brand-slider u-s-p-b-80">
+        <div class="container">
+            <div class="brand-slider-content owl-carousel" data-item="5">
+                <div class="brand-pic">
+                    <a href="#">
+                        <img src="{% static 'images/brand-logos/b1.png'%}" alt="Brand Logo 1">
+                    </a>
+                </div>
+                <div class="brand-pic">
+                    <a href="#">
+                        <img src="{% static 'images/brand-logos/b1.png'%}" alt="Brand Logo 2">
+                    </a>
+                </div>
+                <div class="brand-pic">
+                    <a href="#">
+                        <img src="{% static 'images/brand-logos/b1.png'%}" alt="Brand Logo 3">
+                    </a>
+                </div>
+                <div class="brand-pic">
+                    <a href="#">
+                        <img src="{% static 'images/brand-logos/b1.png'%}" alt="Brand Logo 5">
+                    </a>
+                </div>
+                <div class="brand-pic">
+                    <a href="#">
+                        <img src="{% static 'images/brand-logos/b1.png'%}" alt="Brand Logo 6">
+                    </a>
+                </div>
+                <div class="brand-pic">
+                    <a href="#">
+                        <img src="{% static 'images/brand-logos/b1.png'%}" alt="Brand Logo 7">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Brand-Slider /- -->
+    <!-- Site-Priorities -->
+    <section class="app-priority">
+        <div class="container">
+            <div class="priority-wrapper u-s-p-b-80">
+                <div class="row">
+                    <div class="col-lg-3 col-md-3 col-sm-3">
+                        <div class="single-item-wrapper">
+                            <div class="single-item-icon">
+                                <i class="ion ion-md-star"></i>
+                            </div>
+                            <h2>
+                                Great Value
+                            </h2>
+                            <p>We offer competitive prices on our 100 million plus product range</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3">
+                        <div class="single-item-wrapper">
+                            <div class="single-item-icon">
+                                <i class="ion ion-md-cash"></i>
+                            </div>
+                            <h2>
+                                Shop with Confidence
+                            </h2>
+                            <p>Our Protection covers your purchase from click to delivery</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3">
+                        <div class="single-item-wrapper">
+                            <div class="single-item-icon">
+                                <i class="ion ion-ios-card"></i>
+                            </div>
+                            <h2>
+                                Safe Payment
+                            </h2>
+                            <p>Pay with the world’s most popular and secure payment methods</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3">
+                        <div class="single-item-wrapper">
+                            <div class="single-item-icon">
+                                <i class="ion ion-md-contacts"></i>
+                            </div>
+                            <h2>
+                                24/7 Help Center
+                            </h2>
+                            <p>Round-the-clock assistance for a smooth shopping experience</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Site-Priorities /- -->
+    <!-- Footer -->
+
+    <!-- Footer /- -->
+    <!-- Dummy Selectbox -->
+    <div class="select-dummy-wrapper">
+        <select id="compute-select">
+            <option id="compute-option">All</option>
+        </select>
+    </div>
+
+   
+    <!-- Responsive-Search /- -->
+    <!-- Newsletter-Modal -->
+
+    <!-- Newsletter-Modal /- -->
+    <!-- Quick-view-Modal -->
+    {% for i in products %}
+    <div id="modal-{{i.id}}" class="modal fade" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <button type="button" class="button dismiss-button ion ion-ios-close" data-dismiss="modal"></button>
+                <div class="modal-body">
+                    <form action="{% url 'shop:add_cart' %}" method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <!-- Rasmlarni yonma-yon joylashtirish uchun konteyner -->
+                                <div class="variant-label">Variantlar</div>
+                                <div class="image-container">
+                                    
+                                    {% for color, image_url in i.image_by_color.items%}
+                                    <div class="zoom-area">
+                                         <!-- "Variantlar" yozuvi -->
+    
+                                        <img id="zoom-pro-quick-view" class="img-fluid product-image" 
+                                             src="{{ image_url  }}" 
+                                             srcset="{{ image_url  }} 1x, {{ image_url  }} 2x" 
+                                             data-zoom-image="{{ image_url  }}" 
+                                             alt="Zoom Image">
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <style>
+                                /* Rasmlarni yonma-yon joylashtirish uchun konteyner */
+                                .image-container {
+                                    display: flex; /* Flexbox yordamida yonma-yon joylashtirish */
+                                    flex-wrap: wrap; /* Rasmlarni qatorga sig'masa, yangi qatorga tushirish */
+                                    gap: 1px; /* Rasmlar orasidagi masofa */
+                                }
+                                    
+                                /* Har bir rasm uchun stil */
+                                .product-image {
+                                    border: 1px solid #ddd; /* Chegaralar qo'shish */
+                                    border-radius: 8px; /* Burchaklarni yumaloqlashtirish */
+                                    padding: 5px; /* Chegaralar va rasm orasidagi masofa */
+                                    width: 150px; /* Rasmning kengligi */
+                                    height: 150px; /* Rasmning balandligi */
+                                    object-fit: cover; /* Rasmni moslashtirish */
+                                }
+                            
+                                /* Sichqoncha ustiga kelganda chegaralar rangini o'zgartirish */
+                                .product-image:hover {
+                                    border-color: #007bff;
+                                }
+                                
+                                                    </style>
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <!-- Product-details -->
+                                <div class="all-information-wrapper">
+                                    <div class="section-1-title-breadcrumb-rating">
+                                        <div class="product-title">
+                                            <h1>
+                                                <a href="single-product.html">{{i.nomi}}</a>
+                                            </h1>
+                                        </div>
+                                        <ul class="bread-crumb">
+                                            <li class="has-separator">
+                                                <a href="home.html">Home</a>
+                                            </li>
+                                            {% for p in i.tags.all %}
+                                            <li class="has-separator">
+                                                <a href="shop-v1-root-category.html">{{p.name}}</a>
+                                            </li>
+                                            {% endfor %}
+                                            
+                                        </ul>
+                                        <div class="product-rating">
+                                            <div class='star' title=" out of 5 - based on 23 Reviews">
+                                                <span style='width:67px'></span>
+                                            </div>
+                                            <span>(23)</span>
+                                        </div>
+                                    </div>
+                                    <div class="section-2-short-description u-s-p-y-14">
+                                        <h6 class="information-heading u-s-m-b-8">Description:</h6>
+                                        <p>
+                                            {{i.description}}
+                                        </p>
+                                    </div>
+                                    <div class="section-3-price-original-discount u-s-p-y-14">
+                                        <div class="price">
+                                            <h4>{{i.narxi|floatformat:0 |intcomma}} so'm</h4>
+                                            <input type="hidden" name="cartnarx" value="{{i.narxi}}">
+                                        </div>
+                                        <div class="original-price">
+                                            <span>Original Price:</span>
+                                            <span>$60.00</span>
+                                        </div>
+                                        <div class="discount-price">
+                                            <span>Discount:</span>
+                                            <span>8%</span>
+                                        </div>
+                                        <div class="total-save">
+                                            <span>Save:</span>
+                                            <span>$5</span>
+                                        </div>
+                                    </div>
+                                    <div class="section-4-sku-information u-s-p-y-14">
+                                        <h6 class="information-heading u-s-m-b-8">Sku Information:</h6>
+
+                                        {% if i.soni > 0 %}
+                                        <div class="availability">
+                                            <span>Availability:</span>
+                                            <span>In Stock</span>
+                                        </div>
+                                        <div class="left">
+                                            <span>Only:</span>
+                                            <span>{{i.soni}} left</span>
+                                        </div>
+                                        {% else %}
+                                        <div class="availability">
+                                            <span>Availability:</span>
+                                            <span>Tugadi</span>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <input type="hidden" name="product_id" value="{{ i.id }}">
+                                    <div class="section-5-product-variants u-s-p-y-14">
+                                            <h6 class="information-heading u-s-m-b-8">Product Variants:</h6>
+                                            <div class="color u-s-m-b-11">
+                                                <label for="available-color">Available Color:</label>
+                                                <select id="available-color" name="color">
+                                                    {% for variant in i.colors %}
+                                                        <option value="{{ variant }}">{{ variant }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                
+                                            </div>
+                                            {% for i in i.variants.all %}
+                                            <input type="hidden" name="variant_id" value="{{i.id}}" id="">
+                                            {% endfor %}
+                                        <div class="sizes u-s-m-b-11">
+                                            <label for="available-size">Available Size:</label>
+                                            <select id="available-size" name="size">
+                                                {% for size in i.sizes %}
+                                                    <option value="{{ size }}">{{ size }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <input type="hidden" name="product_name" value="{{ i.nomi }}">
+                                            <input type="hidden" id="variant-image" name="variant_image" value="{% for color, image_url in i.image_by_color.items %}{% if forloop.first %}{{ image_url }}{% endif %}{% endfor %}">                                        </div>
+                                    </div>
+                                    <div class="section-6-social-media-quantity-actions u-s-p-y-14">
+                                            <div class="quick-social-media-wrapper u-s-m-b-22">
+                                                <span>Share:</span>
+                                                <ul class="social-media-list">
+                                                    <li>
+                                                        <a href="#">
+                                                            <i class="fab fa-facebook-f"></i>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#">
+                                                            <i class="fab fa-twitter"></i>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#">
+                                                            <i class="fab fa-google-plus-g"></i>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#">
+                                                            <i class="fas fa-rss"></i>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#">
+                                                            <i class="fab fa-pinterest"></i>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="quantity-wrapper u-s-m-b-22">
+                                                <span>Quantity:</span>
+                                                <div class="quantity">
+                                                    <input type="text" name="quantity" class="quantity-text-field" value="1">
+                                                    <a class="plus-a"  data-max="1000">&#43;</a>
+                                                    <a class="minus-a" data-min="1">&#45;</a>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <button class="button button-outline-secondary" name="add_to_cart" type="submit">Add to cart</button>
+                                                <button class="button button-outline-secondary far fa-heart u-s-m-l-6"></button>
+                                                <button class="button button-outline-secondary far fa-envelope u-s-m-l-6"></button>
+                                            </div>
+                                    </div>
+                                </div>
+                                <!-- Product-details /- -->
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+  
+    {% endfor %}
+    <script>
+        function updateImageValue() {
+            var select = document.getElementById("available-color");
+            var selectedOption = select.options[select.selectedIndex];
+            var imageUrl = selectedOption.getAttribute("data-image");
+        
+            document.getElementById("variant-image").value = imageUrl;
+        }
+        </script>
+        
+
+    
+    
+    <!-- Quick-view-Modal /- -->
+
+<!-- app /- -->
+<!-- [if lte IE 9]>
+<div class="app-issue">
+    <div class="vertical-center">
+        <div class="text-center">
+            <h1>You are using an outdated browser.</h1>
+            <span>This web app is not compatible with following browser. Please upgrade your browser to improve your security and experience.</span>
+        </div>
+    </div>
+</div>
+<style> #app {
+    display: none;
+} </style>
+<![endif]-->
+<!-- NoScript -->
+{% endblock content %}

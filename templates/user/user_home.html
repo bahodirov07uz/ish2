@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oylik Ish Hisoboti</title>
+    <style>
+        :root {
+            --bg-dark: #18192c; /* O'zgartirildi */
+            --bg-darker: #14151e;
+            --card-bg: #23253a;
+            --primary: #e94560;
+            --text-light: #f1f1f1;
+            --text-muted: #b8b8b8;
+            --success: #4ecca3;
+            --warning: #f6c23e;
+            --info: #36b9cc;
+            --radius-lg: 15px;
+            --radius-md: 10px;
+            --shadow: 0 2px 16px rgba(0, 0, 0, 0.35);
+        }
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 24px 12px 90px 12px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+            gap: 10px;
+        }
+
+        .app-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .user-profile {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            position: relative;
+            z-index: 10;
+            font-size: 1.1rem;
+        }
+
+        .logout-menu {
+            position: absolute;
+            top: 48px;
+            right: 0;
+            background: var(--card-bg);
+            border-radius: var(--radius-md);
+            padding: 8px 0;
+            box-shadow: var(--shadow);
+            width: 140px;
+            display: none;
+            z-index: 100;
+            border: 1px solid rgba(255,255,255,0.075);
+        }
+
+        .logout-menu.show {
+            display: block;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            width: 100%;
+            text-align: left;
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.18s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.08);
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: 15px 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255,255,255,0.03);
+            min-width: 0;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stat-card.success { border-top: 3px solid var(--success);}
+        .stat-card.warning { border-top: 3px solid var(--warning);}
+        .stat-card.info { border-top: 3px solid var(--info);}
+        .stat-card.primary { border-top: 3px solid var(--primary);}
+
+        .stat-title {
+            font-size: 0.86rem;
+            color: var(--text-muted);
+        }
+
+        .stat-value {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .stat-change {
+            font-size: 0.82rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .stat-change.positive { color: var(--success);}
+        .stat-change.negative { color: var(--primary);}
+
+        .main-content {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: 16px 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255,255,255,0.025);
+            margin-bottom: 18px;
+        }
+
+        .main-content:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 1.13rem;
+            margin-bottom: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .see-all {
+            font-size: 0.93rem;
+            color: var(--primary);
+            text-decoration: none;
+            opacity: 0.92;
+            transition: opacity 0.17s;
+            margin-left: 10px;
+            font-weight: 400;
+        }
+
+        .see-all:hover { opacity: 1; }
+
+        .task-list {
+            list-style: none;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 9px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            gap: 10px;
+        }
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(233,69,96,0.16);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            margin-right: 4px;
+            font-size: 1.12rem;
+        }
+
+        .task-info {
+            flex: 1 1 0;
+            min-width: 0;
+        }
+
+        .task-name {
+            font-weight: 600;
+            font-size: 0.97rem;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .task-date {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+        .task-status {
+            font-size: 0.81rem;
+            padding: 3px 10px;
+            border-radius: var(--radius-md);
+            margin-left: 10px;
+            min-width: 70px;
+            text-align: center;
+        }
+
+        .status-completed {
+            background: rgba(78, 204, 163, 0.16);
+            color: var(--success);
+        }
+        .status-pending {
+            background: rgba(246, 194, 62, 0.14);
+            color: var(--warning);
+        }
+        .add-task-btn {
+            position: fixed;
+            bottom: 75px;
+            right: 20px;
+            width: 54px;
+            height: 54px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 12px rgba(233,69,96,0.23);
+            z-index: 40;
+            cursor: pointer;
+            font-size: 1.45rem;
+            transition: transform 0.16s;
+        }
+
+        .add-task-btn:hover { transform: scale(1.08); }
+
+        /* RESPONSIVE */
+        @media (min-width: 768px) {
+            .container { max-width: 740px; padding: 32px 0 90px 0;}
+            .stats-container { grid-template-columns: repeat(4, 1fr);}
+            .main-content {padding: 22px 20px;}
+        }
+        @media (min-width: 992px) {
+            .container { max-width: 970px;}
+        }
+        @media (min-width: 1200px) {
+            .container { max-width: 1170px;}
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="app-title">Ish Hisoboti</div>
+            <div class="user-profile" id="profileBtn">{{ user.username|first|upper }}</div>
+            <div class="logout-menu" id="logoutMenu">
+                <button class="logout-btn" id="logoutBtn">
+                    <span>🚪</span>
+                    <span>Chiqish</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="stats-container">
+            {% for stat in stats %}
+            <div class="stat-card {{ stat.color }}">
+                <div class="stat-title">{{ stat.title }}</div>
+                <div class="stat-value">{{ stat.value }}</div>
+                {% if stat.change is not None %}
+                <div class="stat-change {% if stat.is_positive %}positive{% else %}negative{% endif %}">
+                    <span>{% if stat.is_positive %}+{% else %}-{% endif %}{{ stat.change|floatformat:2 }}% o'tgan oydan</span>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="main-content">
+            <h2 class="section-title">
+                Oxirgi topshiriqlar
+                <a href="#" class="see-all">Hammasini ko'rish</a>
+            </h2>
+            <ul class="task-list">
+                {% for work in recent_works %}
+                <li class="task-item">
+                    <div class="task-icon"><span>📦</span></div>
+                    <div class="task-info">
+                        <div class="task-name">{{ work.mahsulot.nomi }} ({{work.soni}} ta)</div>
+                        <div class="task-date">{{ work.sana|date:"d F Y" }}</div>
+                    </div>
+                    <div class="task-status status-completed">Bajarildi</div>
+                </li>
+                {% empty %}
+                <li class="task-item">
+                    <div class="task-info">
+                        <div class="task-name">Ishlar mavjud emas</div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <h2 class="section-title">
+                Jarayondagi so'rovlar
+                <a href="#" class="see-all">Hammasini ko'rish</a>
+            </h2>
+            <ul class="task-list">
+                {% for request in pending_requests %}
+                <li class="task-item">
+                    <div class="task-icon"><span>📝</span></div>
+                    <div class="task-info">
+                        <div class="task-name">{{ request.mahsulot.nomi }} ({{ request.soni }} dona)</div>
+                        <div class="task-date">{{ request.created_at|date:"H:i, d F" }}</div>
+                    </div>
+                    <div class="task-status status-pending">Kutilmoqda</div>
+                </li>
+                {% empty %}
+                <li class="task-item">
+                    <div class="task-info">
+                        <div class="task-name">So'rovlar mavjud emas</div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="add-task-btn" id="addTaskBtn">
+            <span>➕</span>
+        </div>
+        {% include 'user/base.html' %}
+    </div>
+
+    <script>
+        // Profil menyusi
+        const profileBtn = document.getElementById('profileBtn');
+        const logoutMenu = document.getElementById('logoutMenu');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        profileBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            logoutMenu.classList.toggle('show');
+        });
+        logoutBtn.addEventListener('click', function () {
+            window.location.href = "";
+        });
+        document.addEventListener('click', function () {
+            logoutMenu.classList.remove('show');
+        });
+
+        // "Ish qo'shish" tugmasi
+        const addTaskBtn = document.getElementById('addTaskBtn');
+        addTaskBtn.addEventListener('click', function () {
+            window.location.href = "{% url 'main:ish_request_create' %}";
+        });
+
+        // Pastki navigatsiya
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => {
+            item.addEventListener('click', function (e) {
+                e.preventDefault();
+                navItems.forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+                const href = this.getAttribute('href');
+                if (href && href !== '#') {
+                    window.location.href = href;
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

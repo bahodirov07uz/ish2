@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+            <!-- Table Start -->
+            <div class="container-fluid ">
+                <div class="row g-4">
+                    <div class="col-10 ">
+                        <div class="bg-light rounded h-100 p-4 shadow-sm">
+                            <h6 class="mb-4 text-center">Ishchi Ma'lumotlari</h6>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th scope="col">Ism</th>
+                                            <th scope="col">Ish</th>
+                                            <th scope="col">Narx</th>
+                                            <th scope="col">Sana</th>
+                                            <th scope="col">Soni</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for i in object.ishlar.all %}
+                                        <tr>
+                                            <td>{{ i.ishchi.ism }}</td>
+                                            <td>{{ i.mahsulot.nomi }}</td>
+                                            <td>{{ i.narxi }}</td>
+                                            <td>{{ i.sana }}</td>
+                                            <td>{{ i.soni }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Ishchi Ma'lumotlari qismi -->
+                            <div class="card bg-dark text-white mt-4">
+                                <div class="card-body p-3">
+                                    <h3 class="card-title text-center text-white-50">{{ ishchi.ism }} {{ ishchi.familiya }}</h3>
+                                    <p class="card-text text-center">Telefon: {{ ishchi.telefon }}</p>
+                                    <p class="card-text text-center">Turi: {{ ishchi.turi.nomi }}</p>
+
+                                    <div class="text-center my-4">
+                                        <h3 class="text-center text-white-50"> Oylik: {{ ishchi.umumiy_oylik|intcomma }} som</h3>
+                                        <!-- <h3 class="text-center text-white-50">Umumiy Oylik: {{ ishchi.current_oylik }} som</h3> -->
+
+
+                                        {% if ishchi.is_oylik_open %}
+                                            <form method="post" action="{% url 'main:oylik_yopish' ishchi.id %}">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-success btn-lg">Oylikni yopish va qayta hisoblash</button>
+                                            </form>
+                                        {% else %}
+                                            <form method="post" action="{% url 'main:yangi_oy' ishchi.id %}">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-primary">Yangi oyni boshlash</button>
+                                            </form>
+                                        {% endif %}
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+{% endblock content %}

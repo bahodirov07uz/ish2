@@ -1,0 +1,875 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+{% load humanize %}
+<!-- Content Start -->
+<div class="content" >
+    <!-- Form Start -->
+    <div class="container " >
+        <div class="row g-4">
+
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+            <style>
+                .table-hover tbody tr:hover {
+                    background-color: rgba(0, 0, 0, 0.05);
+                }
+                .loading-spinner {
+                    display: inline-block;
+                    width: 1rem;
+                    height: 1rem;
+                    vertical-align: middle;
+                    border: 0.15em solid currentColor;
+                    border-right-color: transparent;
+                    border-radius: 50%;
+                    animation: spinner 0.75s linear infinite;
+                }
+                @keyframes spinner {
+                    to { transform: rotate(360deg); }
+                }
+            </style>
+            <div class="row ">
+                <!-- Ish qo'shish -->
+                <div class="row">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Yopish"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    <div class="container-fluid p-0 m-0">
+                        <div class="table-responsive p-3">  <!-- m-4 o'rniga p-3 -->
+                            <table class="table table-bordered table-hover mb-4">  <!-- mb-4 qo'shildi -->
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Ishchi</th>
+                                        <th>Mahsulot</th>
+                                        <th>Soni</th>
+                                        <th>Narxi</th>
+                                        <th>Umumiy narx</th>
+                                        <th>Amal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ishchi in ishchilar %}
+                                    <tr data-kategoriya="{{ ishchi.turi.nomi }}">
+                                        <td>{{ ishchi.ism }} {{ ishchi.familiya }} <small class="text-muted">({{ ishchi.turi.nomi }})</small></td>
+                                        <td>
+                                            <select class="form-control form-control-sm mahsulot" data-id="{{ ishchi.id }}">
+                                                <option value="">Mahsulot tanlang</option>
+                                                {% for product in mahsulot %}
+                                                <option value="{{ product.id }}" 
+                                                    data-kosib="{{ product.narx_kosib }}" 
+                                                    data-zakatovka="{{ product.narx_zakatovka }}"
+                                                    data-kroy="{{ product.narx_kroy }}" 
+                                                    data-pardozchi="{{ product.narx_pardoz }}" 
+                                                    data-default="{{ product.narxi }}">
+                                                    {{ product.nomi }}
+                                                </option>
+                                                {% endfor %}
+                                            </select>
+                                        </td>
+                                        <td><input type="number" class="form-control form-control-sm soni" min="1" value="1"></td>
+                                        <td class="narxi text-end">0</td>
+                                        <td class="umumiy_narx text-end">0</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-success addIsh" data-id="{{ ishchi.id }}">
+                                                <i class="fas fa-plus"></i> Qo'shish
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>        
+                    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>                    <script>
+                    $(document).ready(function() {
+                        // Narxni formatlash funksiyasi
+                        function formatNumber(num) {
+                            return parseFloat(num) || 0;
+                        }
+                    
+                        // Mahsulot tanlanganda narxni yangilash
+                        $(document).on("change", ".mahsulot", function() {
+                            var tr = $(this).closest("tr");
+                            var kategoriya = tr.data("kategoriya");
+                            var selectedOption = $(this).find(":selected");
+                            
+                            var narx = 0;
+                            if (kategoriya === "kosib") {
+                                narx = selectedOption.data("kosib");
+                            } else if (kategoriya === "zakatovka") {
+                                narx = selectedOption.data("zakatovka");
+                            } else if (kategoriya === "kroy") {
+                                narx = selectedOption.data("kroy");
+                            } else if (kategoriya === "pardozchi") {
+                                narx = selectedOption.data("pardozchi");
+                            } else {
+                                narx = selectedOption.data("default");
+                            }
+                            
+                            tr.find(".narxi").text(formatNumber(narx));
+                            updateTotal(tr);
+                        });
+                    
+                        // Soni o'zgartirilganda
+                        $(document).on("input", ".soni", function() {
+                            updateTotal($(this).closest("tr"));
+                        });
+                    
+                        // Umumiy summani hisoblash
+                        function updateTotal(tr) {
+                            var soni = parseInt(tr.find(".soni").val()) || 0;
+                            var narx = parseFloat(tr.find(".narxi").text()) || 0;
+                            var umumiyNarx = soni * narx;
+                            tr.find(".umumiy_narx").text(formatNumber(umumiyNarx));
+                        }
+                    
+                        $(document).on("click", ".addIsh", function() {
+        var tr = $(this).closest("tr");
+        var ishchi_id = $(this).data("id");
+        var mahsulot_id = tr.find(".mahsulot").val();
+        var soni = tr.find(".soni").val();
+        var csrfToken = $("[name=csrfmiddlewaretoken]").val();
+
+        if (!mahsulot_id) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Diqqat!',
+                text: 'Iltimos, mahsulotni tanlang!',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        $.ajax({
+            url: "/dashbort/add-ish/",
+            type: "POST",
+            data: {
+                'ishchi_id': ishchi_id,
+                'mahsulot_id': mahsulot_id,
+                'soni': soni,
+                'csrfmiddlewaretoken': csrfToken
+            },
+            beforeSend: function() {
+                tr.find(".addIsh").prop("disabled", true)
+                    .html('<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Saqlanmoqda');
+            },
+            success: function(response) {
+                if (response.status === "success") {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Muvaffaqiyatli!',
+                        text: response.message,
+                        confirmButtonText: 'OK',
+                        customClass: {
+                            popup: 'custom-swal-popup',
+                            title: 'custom-swal-title',
+                            confirmButton: 'custom-swal-confirm-button'
+                        }
+                    });
+                    // Formani tozalash
+                    tr.find(".mahsulot").val("");
+                    tr.find(".soni").val("1");
+                    tr.find(".narxi, .umumiy_narx").text("0");
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Xato',
+                        text: response.message,
+                        confirmButtonText: 'Tushunarli'
+                    });
+                }
+            },
+            error: function(xhr) {
+                let errorMsg = "Xatolik yuz berdi! ";
+                if (xhr.status === 404) {
+                    errorMsg += "Server endpointi topilmadi (404). URLni tekshiring.";
+                } else {
+                    errorMsg += "Status kodi: " + xhr.status;
+                }
+                
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Xatolik',
+                    text: errorMsg,
+                    confirmButtonText: 'OK'
+                });
+                console.error(xhr.responseText);
+            },
+            complete: function() {
+                tr.find(".addIsh").prop("disabled", false)
+                    .html('<i class="fas fa-plus me-1"></i> Qo\'shish');
+            }
+        });
+    });
+});
+                    </script>
+                    
+                    
+                    
+                    <!-- Ishlar bo'limi -->
+                    <div class="col-md-4 mb-4">
+                        <div class="card matnini shadow">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="card-title mb-0">Ishlar</h5>
+                            </div>
+                            <div class="card-body">
+                                <a class="btn btn-outline-primary btn-sm w-100 mb-2" data-bs-toggle="modal" data-bs-target="#addIshModal">Ish qo'shish</a>
+                                <a class="btn btn-outline-secondary btn-sm w-100" href="#">Ishlar ro'yxati</a>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <!-- Sotuvlar bo'limi -->
+                    <div class="col-md-4 mb-4">
+                        <div class="card shadow">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="card-title mb-0">Sotuvlar</h5>
+                            </div>
+                            <div class="card-body">
+                                <a class="btn btn-outline-success btn-sm w-100 mb-2" data-bs-toggle="modal" data-bs-target="#addSotuvModal">Sotuv qo'shish</a>
+                                <a class="btn btn-outline-secondary btn-sm w-100" href="#">Sotuvlar statistikasi</a>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <!-- Chiqimlar bo'limi -->
+                    <div class="col-md-4 mb-4">
+                        <div class="card shadow">
+                            <div class="card-header bg-danger text-white">
+                                <h5 class="card-title mb-0">Chiqimlar</h5>
+                            </div>
+                            <div class="card-body">
+                                <a class="btn btn-outline-danger btn-sm w-100 mb-2" data-bs-toggle="modal" data-bs-target="#addChiqimModal">Chiqim qo'shish</a>
+                                <a class="btn btn-outline-secondary btn-sm w-100" href="#">Chiqimlar hisoboti</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Category -->
+                    <div class="col-md-4 mb-4">
+                        <div class="card shadow">
+                            <div class="card-header bg-danger text-white">
+                                <h5 class="card-title mb-0">Kategoriyalar</h5>
+                            </div>
+                            <div class="card-body">
+                                <a class="btn btn-outline-danger btn-sm w-100 mb-2" data-bs-toggle="modal" data-bs-target="#addCategoryModal">Kategoriya qo'shish</a>
+                                <a class="btn btn-outline-secondary btn-sm w-100" data-bs-toggle="modal" data-bs-target="#CategoryModal">Kategoriyalar</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ishchi -->
+                    <div class="col-md-4 mb-4">
+                        <div class="card shadow">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="card-title mb-0">Ishchi qo'shish </h5>
+                            </div>
+                            <div class="card-body">
+                                <a class="btn btn-outline-primary btn-sm w-100 mb-2" data-bs-toggle="modal" data-bs-target="#addIshchiModal">Ishchi qo'shish</a>
+                                <a class="btn btn-outline-secondary btn-sm w-100" data-bs-toggle="modal" data-bs-target="#IshchiModal">Ishchilar ro'yxati</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- mahsulot -->
+                    <div class="col-md-4 mb-4">
+                        <div class="card shadow">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="card-title mb-0">Mahsulot qoshish </h5>
+                            </div>
+                            <div class="card-body">
+                                <a class="btn btn-outline-success btn-sm w-100 mb-2" data-bs-toggle="modal" data-bs-target="#addMahsulotModal">Mahsulot qo'shish</a>
+                                <a class="btn btn-outline-secondary btn-sm w-100" data-bs-toggle="modal" data-bs-target="#MahsulotModal">Mahsulotlar statistikasi</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- xaridor -->
+                    <div class="col-md-4 mb-4">
+                        <div class="card shadow">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="card-title mb-0">Xaridor qoshish </h5>
+                            </div>
+                            <div class="card-body">
+                                <a class="btn btn-outline-success btn-sm w-100 mb-2" data-bs-toggle="modal" data-bs-target="#addXaridorModal">Xaridor qo'shish</a>
+                                <a class="btn btn-outline-secondary btn-sm w-100"data-bs-toggle="modal" data-bs-target="#XaridorModal" >xaridorlar statistikasi</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card shadow">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="card-title mb-0">Variantlar</h5>
+                            </div>
+                            <div class="card-body">
+                                <a class="btn btn-outline-success btn-sm w-100 mb-2" data-bs-toggle="modal" data-bs-target="#addVariantModal">Variantlar qo'shish</a>
+                                <a class="btn btn-outline-secondary btn-sm w-100" href="#">Variantlar statistikasi</a>
+                            </div>
+                        </div>
+                    </div>
+                
+                </div>
+
+            <!-- form start -->
+        
+            <!-- Ish qo'shish -->
+            <div class="modal fade" id="addIshModal" tabindex="-1" aria-labelledby="addIshModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addJobModalLabel">Ish qo'shish</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Form inside modal -->
+                            <form method="post" action="{% url 'main:crete_frm'%}" >
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label class="form-label">Mahsulot tanlang</label>
+                                    <select class="form-select" name="ish_mahsulot">
+                                        <option value="">Mahsulot tanlang</option>
+                                        {% for value in mahsulot %}
+                                        <option value="{{value.id}}">{{value.nomi}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Ishchini tanlang</label>
+                                    <select class="form-select" name="ish_name">
+                                        <option value="">Ishchini tanlang</option>
+                                        {% for value in ishchilar %}
+                                        <option value="{{value.id}}">{{value.ism}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Sonini kiriting</label>
+                                    <input type="number" name="ish_soni" class="form-control">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Narxini kiriting</label>
+                                    <input type="number" name="ish_narxi" class="form-control">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Yopish</button>
+                                    <button type="submit" name="ish_qosh" class="btn btn-primary">Saqlash</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- sotuv -->
+            
+            <div class="modal fade" id="addSotuvModal" tabindex="-1" aria-labelledby="addSotuvModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addJobModalLabel">Sotuv qo'shish</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Form inside modal -->
+                            <form method="post" action="{% url 'main:crete_frm' %}">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label class="form-label">xaridorni tanlang</label>
+                                    <select class="form-select" name="sotuv_name">
+                                        <option value="">xaridorni tanlang</option>
+                                        {% for i in xaridor %}
+                                        <option value="{{i.id}}">{{i.name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Mahsulotni tanlang</label>
+                                    <select class="form-select" name="sotuv_mahsulot">
+                                        <option value="">Mahsulotni tanlang</option>
+                                        {% for i in mahsulot %}
+                                            <option value="{{i.id}}">{{i.nomi}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Sonini kiriting</label>
+                                    <input type="number" name="sotuv_soni" class="form-control">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button"  class="btn btn-secondary" data-bs-dismiss="modal">Yopish</button>
+                                    <button type="submit" name="sotuv" class="btn btn-primary">Saqlash</button>
+                                </div>                            
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>   
+
+            <!-- chiqimlar -->
+
+
+            <div class="modal fade" id="addChiqimModal" tabindex="-1" aria-labelledby="addChiqimLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addChiqimModalLabel">Chiqim qo'shish</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Form inside modal -->
+                            <form method="post" action="{% url 'main:crete_frm'%}">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label class="form-label">Nomini kiriting</label>
+                                    <input type="text" name="chiqim_name" class="form-control">
+                                </div>  
+                                <div class="mb-3">
+                                    <label class="form-label">Turini tanlang</label>
+                                    <select class="form-select" name="chiqimturi">
+                                        <option value="">Turi tanlang</option>
+                                        {% for k in chiqimturi %}
+                                        <option value="{{k.id}}">{{k.name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Narxini kiriting</label>
+                                    <input type="number" name="chiqim_narxi" class="form-control">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button"  class="btn btn-secondary" data-bs-dismiss="modal">Yopish</button>
+                                    <button type="submit" name="chiqim" class="btn btn-primary">Saqlash</button>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!--mahsulot-->
+
+
+            <div class="modal fade" id="addMahsulotModal" tabindex="-1" aria-labelledby="addMahsulotModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addJobModalLabel">Mahsulot qo'shish</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Form inside modal -->
+                            <form method="post" enctype="multipart/form-data" action="{% url 'main:crete_frm' %}">
+                                {% csrf_token %}
+
+                                <div class="mb-3">
+                                    <label class="form-label">Mahsulot nomi</label>
+                                    <input type="text" name="mahsulot_nomi" class="form-control">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Sonini kiriting</label>
+                                    <input type="number" name="mahsulot_soni" class="form-control">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Narxini kiriting</label>
+                                    <input type="number" name="mahsulot_narxi" class="form-control">
+                                </div>
+                                <div>
+                                    <label class="form-label" >Rasm yuklash</label>
+                                    <input class="form-control" name="mahsulot_rasmi" type="file">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Yopish</button>
+                                    <button type="submit" name="mahs_sbmt" class="btn btn-primary">Saqlash</button>
+                                </div>                                 
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="MahsulotModal" tabindex="-1" aria-labelledby="MahsulotModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addJobModalLabel">Ishchi qo'shish</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Ism</th>
+                                    <th>Familiya</th>
+                                    <th>Telefon</th>
+                                    <th>Ish Turi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Ali</td>
+                                    <td>Valiyev</td>
+                                    <td>+998901234567</td>
+                                    <td>Dasturchi</td>
+                                </tr>
+                                <tr>
+                                    <td>Vali</td>
+                                    <td>Aliyev</td>
+                                    <td>+998901234568</td>
+                                    <td>Dizayner</td>
+                                </tr>
+                            </tbody>
+                        </table>    
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Yopish</button>
+                            <button type="button" class="btn btn-primary">Saqlash</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- category -->
+
+
+            <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addCategoryModalLabel">Ishchi kategoriyasi qo'shish</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Form inside modal -->
+                            <form method="post" action="{% url 'main:crete_frm'%}">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label class="form-label">Category  kiriting</label>
+                                    <input type="text" name="category_name" class="form-control">
+                                </div>  
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Yopish</button>
+                                    <button type="submit" name="ctg_sbmt" class="btn btn-primary">Saqlash</button>
+                                </div>                                
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="CategoryModal" tabindex="-1" aria-labelledby="CategoryModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addJobModalLabel">Ishchi qo'shish</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped table-hover shadow-sm">
+                                <thead class="table">
+
+                                    <tr class="text-center">
+                                        <th>Nomi</th>
+                                        <th>Birikkan ishchilar soni</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                    {% for i in categories %}
+                                    <tr>
+                                        <td>{{i.nomi}}</td>
+                                        <td>{{i.ishchilar_soni}}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Yopish</button>
+                            <button type="button" class="btn btn-primary">Saqlash</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+ 
+            <!-- ishchi -->
+
+
+            <div class="modal fade" id="addIshchiModal" tabindex="-1" aria-labelledby="addIshchiModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addJobModalLabel">Ishchi qo'shish</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Form inside modal -->
+                            <form method="post" action="{% url 'main:crete_frm'%}">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label class="form-label">Ism kiriting</label>
+                                    <input type="text" name="ishchi_name" class="form-control">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Familiya kiriting</label>
+                                    <input type="text" name="ishchi_fam" class="form-control">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Telefon kiriting</label>
+                                    <input type="number" name="ishchi_tel" class="form-control">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Ishchi turini tanlang</label>
+                                    <select class="form-select" name="ish_ctg">
+                                        <option value="">Ishchi turini tanlang</option>
+                                        {% for i in categories %}
+                                        <option value="{{i.id }}">{{i.nomi}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Yopish</button>
+                                    <button type="submit" name="ishchi_sbmt" class="btn btn-primary">Saqlash</button>
+                                </div>                                
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="IshchiModal" tabindex="-1" aria-labelledby="IshchiModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addJobModalLabel">Ishchi qo'shish</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Ism</th>
+                                    <th>Familiya</th>
+                                    <th>Telefon</th>
+                                    <th>Ish Turi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Ali</td>
+                                    <td>Valiyev</td>
+                                    <td>+998901234567</td>
+                                    <td>Dasturchi</td>
+                                </tr>
+                                <tr>
+                                    <td>Vali</td>
+                                    <td>Aliyev</td>
+                                    <td>+998901234568</td>
+                                    <td>Dizayner</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Yopish</button>
+                            <button type="button" class="btn btn-primary">Saqlash</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+ 
+            <!-- xaridor -->
+            
+
+            <div class="modal fade" id="addXaridorModal" tabindex="-1" aria-labelledby="addXaridorModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addJobModalLabel">Sotuv qo'shish</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Form inside modal -->
+                            <form method="post" action="{% url 'main:crete_frm' %}">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label class="form-label">Xaridor ismini kiriting</label>
+                                    <input type="text" name="xar_name" class="form-control">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Xaridor telefonini kiriting</label>
+                                    <input type="number" name="xar_tel" class="form-control">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Yopish</button>
+                                    <button type="submit" name="xar_sbmt" class="btn btn-primary">Saqlash</button>
+                                </div>                                
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div> 
+
+            <div class="modal fade" id="XaridorModal" tabindex="-1" aria-labelledby="XaridorModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addJobModalLabel">Ishchi qo'shish</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Ism</th>
+                                    <th>Familiya</th>
+                                    <th>Telefon</th>
+                                    <th>Ish Turi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Ali</td>
+                                    <td>Valiyev</td>
+                                    <td>+998901234567</td>
+                                    <td>Dasturchi</td>
+                                </tr>
+                                <tr>
+                                    <td>Vali</td>
+                                    <td>Aliyev</td>
+                                    <td>+998901234568</td>
+                                    <td>Dizayner</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Yopish</button>
+                            <button type="button" class="btn btn-primary">Saqlash</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- form end -->
+
+            <div class="modal fade" id="addVariantModal" tabindex="-1" aria-labelledby="addVariantLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addVariantModalLabel">Mahsulot varianti  qo'shish</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Form inside modal -->
+                            <form method="post" enctype="multipart/form-data" action="{% url 'main:crete_frm'%}">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label class="form-label">Mahsulot tanlang</label>
+                                    <select class="form-select" name="variant_mahsulot">
+                                        <option value="">Mahsulot tanlang</option>
+                                        {% for value in mahsulot %}
+                                        <option value="{{value.id}}">{{value.nomi}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Variant rangini  kiriting</label>
+                                    <input type="text" name="variant_rang" class="form-control">
+                                </div>  
+                                <div class="mb-3">
+                                    <label class="form-label">Sonini kiriting</label>
+                                    <input type="number" name="variant_soni" class="form-control">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Narxi kiriting</label>
+                                    <input type="number" name="variant_narxi" class="form-control">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Rasmini  kiriting</label>
+                                    <input type="file" name="variant_rasmi" class="form-control">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Yopish</button>
+                                    <button type="submit" name="vrt_sbmt" class="btn btn-primary">Saqlash</button>
+                                </div>                                
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+<!-- Modal -->
+
+            
+            <div class="container pt-4 px-4">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Asosiy</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Sotuvlar</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Chiqimlar</button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                        <!-- Asosiy statistikalar -->
+                        <h3>Asosiy Statistikalar</h3>
+                        <canvas id="mainChart" width="400" height="200"></canvas>
+                    </div>
+                    <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                        <!-- Sotuvlar statistikasi -->
+                        <h3>Sotuvlar Statistikasi</h3>
+                        <canvas id="salesChart" width="400" height="200"></canvas>
+                    </div>
+                    <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                        <!-- Chiqimlar statistikasi -->
+                        <h3>Chiqimlar Statistikasi</h3>
+                        <canvas id="expensesChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+
+                
+            </div>
+
+            
+
+        </div>
+    </div>
+    <form method="get" class="mb-4">
+        <div class="row">
+            <div class="col-md-4">
+                <label for="holati">Holati</label>
+                <select name="holati" id="holati" class="form-select">
+                    <option value="">Barchasi</option>
+                    <option value="Yakunlandi">Yakunlandi</option>
+                    <option value="Jarayonda">Jarayonda</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="start_date">Boshlanish Sanasi</label>
+                <input type="date" name="start_date" id="start_date" class="form-control">
+            </div>
+            <div class="col-md-4">
+                <label for="end_date">Tugash Sanasi</label>
+                <input type="date" name="end_date" id="end_date" class="form-control">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Filtr</button>
+    </form>
+    <!-- Footer Start -->
+    <div class="container pt-4">
+        <div class="bg-light rounded-top p-4 text-center">
+            &copy; <a href="#">Your Site Name</a>, All Rights Reserved.  
+            Designed by <a href="https://htmlcodex.com">HTML Codex</a>
+        </div>
+    </div>
+    <!-- Footer End -->
+
+</div>
+
+{% endblock content %}

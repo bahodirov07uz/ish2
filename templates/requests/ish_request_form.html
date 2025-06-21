@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if object %}Ish So'rovini Tahrirlash{% else %}Yangi Ish So'rovi{% endif %}</title>
+    <style>
+        :root {
+            --bg-dark: #232439;
+            --bg-darker: #18192c;
+            --border-color: #34354a;
+            --primary-gradient: linear-gradient(90deg, #4263eb 70%, #63e6be 100%);
+            --text-light: #f3f6fa;
+            --text-muted: #adb5bd;
+            --radius-lg: 1.5rem;
+            --radius-md: 0.9rem;
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.18);
+            --success: #63e6be;
+            --error: #fa5252;
+            --info: #4263eb;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-size: 16px;
+        }
+
+        body {
+            background: var(--bg-darker);
+            color: var(--text-light);
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Ubuntu, sans-serif;
+            line-height: 1.5;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            margin: 48px auto;
+            padding: 0 1rem;
+            flex: 1 1 auto;
+        }
+
+        .card {
+            background: var(--bg-dark);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            border: none;
+            padding: 0;
+        }
+
+        .card-body {
+            padding: 2rem 2.25rem;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .fw-bold {
+            font-weight: 700;
+        }
+
+        .mb-4 {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .form-control {
+            width: 100%;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 0.75rem 1rem;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        select.form-control {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23adb5bd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1.2em;
+        }
+
+        .form-control:focus {
+            border-color: #4263eb;
+            box-shadow: 0 0 0 0.15rem rgba(66, 99, 235, 0.11);
+            background: var(--bg-dark);
+            color: var(--text-light);
+            outline: none;
+        }
+
+        .btn {
+            border-radius: var(--radius-md);
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            font-size: 1.05rem;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            background-size: 200% auto;
+            color: #fff;
+            box-shadow: 0 2px 6px rgba(66, 99, 235, 0.14);
+        }
+
+        .btn-primary:hover, .btn-primary:focus {
+            background-position: right center;
+            opacity: 0.95;
+        }
+
+        .btn-secondary {
+            background: var(--border-color);
+            color: var(--text-light);
+        }
+
+        .btn-secondary:hover, .btn-secondary:focus {
+            background: var(--bg-dark);
+            color: #63e6be;
+        }
+
+        /* Tugmalar uchun yangi stil */
+        .buttons-row {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .buttons-row .btn {
+            flex: 1;
+        }
+
+        /* --- Animated Message Styles --- */
+        .page-message-absolute-block {
+            position: fixed;
+            top: 1.5rem;
+            left: 50%;
+            z-index: 1111;
+            width: calc(100vw - 2rem);
+            max-width: 410px;
+            transform: translateX(-50%);
+            pointer-events: none;
+        }
+        .page-message-absolute-block .anim-message {
+            pointer-events: auto;
+        }
+        .anim-message {
+            position: relative;
+            margin: 0 auto 0.8rem auto;
+            border-radius: 0.8rem;
+            padding: 1.1rem 1.5rem 1.1rem 3.2rem;
+            font-weight: 600;
+            font-size: 1.08rem;
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.35s cubic-bezier(.55,.1,.89,.53), transform 0.35s cubic-bezier(.55,.1,.89,.53);
+            box-shadow: 0 2px 12px 0 rgba(66, 99, 235, 0.08), 0 1.5px 8px 0 rgba(99, 230, 190, 0.08);
+            background: rgba(35, 36, 57, 0.99);
+            border-left: 5px solid var(--info);
+            color: var(--text-light);
+        }
+        .anim-message.success {
+            background: rgba(99, 230, 190, 0.09);
+            border-left-color: var(--success);
+            color: #63e6be;
+        }
+        .anim-message.error, .anim-message.danger {
+            background: rgba(250, 82, 82, 0.09);
+            border-left-color: var(--error);
+            color: #fa5252;
+        }
+        .anim-message.info {
+            background: rgba(66, 99, 235, 0.09);
+            border-left-color: var(--info);
+            color: #4263eb;
+        }
+        .anim-message.hide {
+            opacity: 0;
+            transform: translateY(-16px) scale(.96);
+            pointer-events: none;
+        }
+        .anim-message .close-btn {
+            position: absolute;
+            right: 1.1rem;
+            top: 1.1rem;
+            color: inherit;
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+        .anim-message .close-btn:hover {
+            opacity: 1;
+        }
+
+        @media (max-width: 600px) {
+            html, body {
+                font-size: 14px;
+            }
+            .container {
+                max-width: 100%;
+                margin: 16px auto;
+                padding: 0 0.8rem;
+            }
+            .card {
+                border-radius: 1rem;
+            }
+            .card-body {
+                padding: 1.5rem 1rem;
+            }
+            :root {
+                --radius-lg: 1rem;
+            }
+            h1 {
+                font-size: 1.3rem;
+                margin-bottom: 1.2rem !important;
+            }
+            .page-message-absolute-block {
+                max-width: 96vw;
+                top: 0.7rem;
+                padding: 0 0.25rem;
+            }
+            .anim-message { 
+                font-size: 0.95rem;
+                padding: 0.9rem 1.2rem 0.9rem 2.8rem;
+            }
+            .form-label {
+                font-size: 0.95rem;
+            }
+            .mb-4 {
+                margin-bottom: 1.2rem;
+            }
+            .buttons-row {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            html, body {
+                font-size: 13px;
+            }
+            .card-body {
+                padding: 1.2rem 0.8rem;
+            }
+            .btn,
+            .form-control {
+                font-size: 0.92rem;
+                padding: 0.65rem 0.8rem;
+            }
+            h1 {
+                font-size: 1.2rem;
+            }
+            .form-label {
+                margin-bottom: 0.4rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Absolute message block (doesn't move content) -->
+    {% if messages %}
+        <div class="page-message-absolute-block">
+            {% for message in messages %}
+                <div class="anim-message {{ message.tags }}">
+                    <button type="button" class="close-btn" aria-label="Yopish" onclick="this.parentElement.classList.add('hide');">&times;</button>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="container">
+        <div class="card mt-3">
+            <div class="card-body p-4 p-md-5">
+                <h1 class="mb-4 text-center fw-bold">
+                    {% if object %}Ish So'rovini Tahrirlash{% else %}Yangi Ish So'rovi{% endif %}
+                </h1>
+                <form method="post" autocomplete="on" id="ish-request-form">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label for="{{ form.mahsulot.id_for_label }}" class="form-label">Mahsulot</label>
+                        {{ form.mahsulot }}
+                    </div>
+                    <div class="mb-4">
+                        <label for="{{ form.soni.id_for_label }}" class="form-label">Soni</label>
+                        {{ form.soni }}
+                    </div>
+                    <div class="mb-4">
+                        <label for="{{ form.sana.id_for_label }}" class="form-label">Sana</label>
+                        {{ form.sana }}
+                    </div>
+                    <div class="buttons-row">
+                        <button type="submit" class="btn btn-primary">Saqlash</button>
+                        <a href="{% url 'main:ish_request_list' %}" class="btn btn-secondary">Orqaga</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% include 'user/base.html' %}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add .form-control class to inputs if not already present
+            document.querySelectorAll('#ish-request-form input, #ish-request-form select, #ish-request-form textarea').forEach(el => {
+                if (!el.classList.contains('form-control')) {
+                    el.classList.add('form-control');
+                }
+            });
+            
+            // Set date input max to yesterday (only past dates allowed)
+            const dateInput = document.querySelector('input[type="date"]');
+            if (dateInput) {
+                const today = new Date();
+                const yesterday = new Date(today);
+                yesterday.setDate(yesterday.getDate() - 1);
+                
+                // Format as YYYY-MM-DD
+                const maxDate = yesterday.toISOString().split('T')[0];
+                dateInput.max = maxDate;
+                
+                // If no value is set, set it to yesterday
+                if (!dateInput.value) {
+                    dateInput.value = maxDate;
+                }
+            }
+
+            // --- Messages: auto disappear & animation
+            document.querySelectorAll('.anim-message').forEach(msg => {
+                setTimeout(() => {
+                    msg.classList.add('hide');
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+
+</html>

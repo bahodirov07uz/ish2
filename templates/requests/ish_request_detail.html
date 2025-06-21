@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Ish So'rovi #{{ ish_request.id }}</h2>
+<div class="card">
+    <div class="card-body">
+        <p><strong>Mahsulot:</strong> {{ ish_request.mahsulot.nomi }}</p>
+        <p><strong>Soni:</strong> {{ ish_request.soni }}</p>
+        <p><strong>Sana:</strong> {{ ish_request.sana }}</p>
+        <p><strong>Ishchi:</strong> {{ ish_request.ishchi.ism }} {{ ish_request.ishchi.familiya }}</p>
+        <p><strong>Holati:</strong> {{ ish_request.get_status_display }}</p>
+        <p><strong>Izoh:</strong> {{ ish_request.notes|default:"-" }}</p>
+        
+        <div class="mt-4">
+            {% if ish_request.status == 'pending' and user.is_superuser %}
+            <a href="{% url 'main:ish_request_approve' ish_request.pk %}" class="btn btn-success">Tasdiqlash</a>
+            <a href="{% url 'main:ish_request_reject' ish_request.pk %}" class="btn btn-danger">Rad etish</a>
+            {% endif %}
+            <a href="{% url 'main:ish_request_list' %}" class="btn btn-secondary">Orqaga</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

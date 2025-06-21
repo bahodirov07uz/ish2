@@ -1,0 +1,74 @@
+{% extends 'shop/base2.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+
+    <div class="page-wishlist u-s-p-t-80">
+        <div class="container">
+            <div class="row">
+
+                <div class="col-lg-12">
+                    <!-- Products-List-Wrapper -->
+                    <div class="table-wrapper u-s-m-b-60">
+                        <table>
+
+                            <tbody>
+                                {% for i in product %}
+                                <tr>
+                                    <td>
+                                        <div class="cart-anchor-image">
+                                            <a href="{% url 'shop:detail' i.id%}">
+                                                <img src="{{i.image.url}}" alt="Product">
+                                                <h6>{{i.nomi}}</h6>
+                                            </a>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="cart-price">
+                                            {{i.narxi|floatformat:0|intcomma}} so'm
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="cart-stock">
+                                            {% if i.soni > 0%}
+                                                Mavjud
+                                            {% else %}
+                                                Qolmagan
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="action-wrapper">
+                                            <a href="{% url 'shop:detail' i.id%}"><button class="button button-outline-secondary" type="submit" name="add_to_cart" >Mahsulotni ko'rish</button></a>
+                                            <a href="{% url 'shop:remove_from_wishlist_session' i.id%}"><button type="submit" class="button button-outline-secondary fas fa-trash"></button></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Products-List-Wrapper /- -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Wishlist-Page /- -->
+    <!-- Footer -->
+
+<!-- app /- -->
+<!--[if lte IE 9]>
+<div class="app-issue">
+    <div class="vertical-center">
+        <div class="text-center">
+            <h1>You are using an outdated browser.</h1>
+            <span>This web app is not compatible with following browser. Please upgrade your browser to improve your security and experience.</span>
+        </div>
+    </div>
+</div>
+<style> #app {
+    display: none;
+} </style>
+<![endif]-->
+<!-- NoScript -->
+{% endblock content %}
