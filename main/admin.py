@@ -211,11 +211,13 @@ class IshRequestAdmin(admin.ModelAdmin):
     user_info.short_description = _("Foydalanuvchi")
     
     def mahsulot_info(self, obj):
-        return obj.mahsulot.nomi
+        return obj.mahsulot.nomi if obj.mahsulot else ""
     mahsulot_info.short_description = _("Mahsulot")
     
     def ishchi_info(self, obj):
-        return f"{obj.ishchi.ism} {obj.ishchi.familiya}"
+        if obj.ishchi:
+            return f"{obj.ishchi.ism} {obj.ishchi.familiya}"
+        return ""
     ishchi_info.short_description = _("Ishchi")
     
     def status_display(self, obj):
@@ -245,7 +247,7 @@ class IshRequestAdmin(admin.ModelAdmin):
     def approve_selected(self, request, queryset):
         queryset.update(status='approved')
         for obj in queryset:
-            if not hasattr(obj, 'created_ish'):
+            if not hasattr(obj, 'created_ish') and obj.ishchi:  # Check if ishchi exists
                 Ish.objects.create(
                     mahsulot=obj.mahsulot,
                     soni=obj.soni,
@@ -275,16 +277,21 @@ class IshRequestAdmin(admin.ModelAdmin):
         from .models import Ish
         
         obj = self.get_object(request, object_id)
+        if not obj:
+            messages.error(request, _("So'rov topilmadi!"))
+            return redirect('admin:main_ishrequest_changelist')
+            
         obj.status = 'approved'
         obj.save()
         
-        # Ish yaratish
-        Ish.objects.create(
-            mahsulot=obj.mahsulot,
-            soni=obj.soni,
-            sana=obj.sana,
-            ishchi=obj.ishchi,
-        )
+        # Ish yaratish (only if ishchi exists)
+        if obj.ishchi:
+            Ish.objects.create(
+                mahsulot=obj.mahsulot,
+                soni=obj.soni,
+                sana=obj.sana,
+                ishchi=obj.ishchi,
+            )
         
         messages.success(request, _("So'rov muvaffaqiyatli tasdiqlandi va ish yaratildi!"))
         return redirect('admin:main_ishrequest_changelist')
@@ -294,10 +301,15 @@ class IshRequestAdmin(admin.ModelAdmin):
         from django.shortcuts import redirect
         from django.contrib import messages
         obj = self.get_object(request, object_id)
+        if not obj:
+            messages.error(request, _("So'rov topilmadi!"))
+            return redirect('admin:main_ishrequest_changelist')
+            
         obj.status = 'rejected'
         obj.save()
         messages.warning(request, _("So'rov rad etildi!"))
         return redirect('admin:main_ishrequest_changelist')
+    
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         # Agar user ishchi bo'lsa (user.ishchi_profili bor bo'lsa)
