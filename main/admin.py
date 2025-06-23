@@ -325,7 +325,6 @@ class IshRequestAdmin(admin.ModelAdmin):
             return qs.filter(user=request.user)
         return qs
  
- 
 @admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
