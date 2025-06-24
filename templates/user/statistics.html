@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ishchi Statistikasi</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #18192c;
+      color: #ffffff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+
+    h1 {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 1.5rem;
+    }
+
+    .chart-container {
+      width: 90%;
+      max-width: 600px;
+      padding: 20px;
+      background-color: #1f2033;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+    }
+
+    canvas {
+      width: 100% !important;
+      height: auto !important;
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 1.2rem;
+      }
+
+      .chart-container {
+        padding: 15px;
+        border-radius: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Oylar kesimida ishlar statistikasi</h1>
+  <div class="chart-container">
+    <canvas id="myChart"></canvas>
+    {% include 'user/base.html' %}
+  </div>
+
+  <script>
+    fetch("/staff-app/chart/data/")
+      .then((res) => res.json())
+      .then((data) => {
+        const ctx = document.getElementById("myChart").getContext("2d");
+        new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: data.labels,
+            datasets: [
+              {
+                label: "Ish soni",
+                data: data.jami_soni,
+                backgroundColor: "#4CAF50",
+                borderRadius: 6,
+                barThickness: 40,
+              },
+              {
+                label: "Narxi",
+                data: data.jami_narxi,
+                backgroundColor: "#2196F3",
+                borderRadius: 6,
+                barThickness: 40,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              x: {
+                ticks: { color: "#ffffff" },
+                grid: { color: "#333", borderColor: "#333" },
+              },
+              y: {
+                beginAtZero: true,
+                ticks: { color: "#ffffff" },
+                grid: { color: "#333", borderColor: "#333" },
+              },
+            },
+            plugins: {
+              legend: {
+                labels: {
+                  color: "#ffffff",
+                  font: {
+                    size: 14
+                  }
+                },
+              },
+            },
+          },
+        });
+      });
+  </script>
+</body>
+</html>

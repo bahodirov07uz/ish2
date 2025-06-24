@@ -153,70 +153,114 @@
             flex: 1;
         }
 
-        /* --- Animated Message Styles --- */
-        .page-message-absolute-block {
-            position: fixed;
-            top: 1.5rem;
-            left: 50%;
-            z-index: 1111;
-            width: calc(100vw - 2rem);
-            max-width: 410px;
-            transform: translateX(-50%);
-            pointer-events: none;
-        }
-        .page-message-absolute-block .anim-message {
-            pointer-events: auto;
-        }
-        .anim-message {
-            position: relative;
-            margin: 0 auto 0.8rem auto;
-            border-radius: 0.8rem;
-            padding: 1.1rem 1.5rem 1.1rem 3.2rem;
-            font-weight: 600;
-            font-size: 1.08rem;
-            opacity: 1;
-            transform: translateY(0);
-            transition: opacity 0.35s cubic-bezier(.55,.1,.89,.53), transform 0.35s cubic-bezier(.55,.1,.89,.53);
-            box-shadow: 0 2px 12px 0 rgba(66, 99, 235, 0.08), 0 1.5px 8px 0 rgba(99, 230, 190, 0.08);
-            background: rgba(35, 36, 57, 0.99);
-            border-left: 5px solid var(--info);
-            color: var(--text-light);
-        }
-        .anim-message.success {
-            background: rgba(99, 230, 190, 0.09);
-            border-left-color: var(--success);
-            color: #63e6be;
-        }
-        .anim-message.error, .anim-message.danger {
-            background: rgba(250, 82, 82, 0.09);
-            border-left-color: var(--error);
-            color: #fa5252;
-        }
-        .anim-message.info {
-            background: rgba(66, 99, 235, 0.09);
-            border-left-color: var(--info);
-            color: #4263eb;
-        }
-        .anim-message.hide {
-            opacity: 0;
-            transform: translateY(-16px) scale(.96);
-            pointer-events: none;
-        }
-        .anim-message .close-btn {
-            position: absolute;
-            right: 1.1rem;
-            top: 1.1rem;
-            color: inherit;
-            background: none;
-            border: none;
-            font-size: 1.3rem;
-            cursor: pointer;
-            opacity: 0.8;
-            transition: opacity 0.2s;
-        }
-        .anim-message .close-btn:hover {
-            opacity: 1;
-        }
+.anim-message {
+    position: relative;
+    margin: 0 auto 0.8rem auto;
+    border-radius: 1rem;
+    padding: 1rem 1.5rem 1rem 3.5rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.4s cubic-bezier(.55,.1,.89,.53), transform 0.4s cubic-bezier(.55,.1,.89,.53);
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.15),
+        0 0 10px rgba(0, 0, 0, 0.05);
+    background: linear-gradient(135deg, #38d39f, #4acfac);
+    color: #fff;
+    pointer-events: auto;
+    user-select: none;
+}
+
+/* Success (green) style with nicer gradient */
+.anim-message.success {
+    background: linear-gradient(135deg, #38d39f, #4acfac);
+    box-shadow:
+        0 4px 14px rgba(56, 211, 159, 0.5),
+        0 0 15px rgba(74, 207, 172, 0.6);
+    color: #ffffff;
+}
+
+/* Error (red) style */
+.anim-message.error, .anim-message.danger {
+    background: linear-gradient(135deg, #fa5252, #ff6b6b);
+    box-shadow:
+        0 4px 14px rgba(250, 82, 82, 0.6),
+        0 0 15px rgba(255, 107, 107, 0.7);
+    color: #fff;
+}
+
+/* Info (blue) style */
+.anim-message.info {
+    background: linear-gradient(135deg, #4263eb, #63a4ff);
+    box-shadow:
+        0 4px 14px rgba(66, 99, 235, 0.5),
+        0 0 15px rgba(99, 164, 255, 0.6);
+    color: #fff;
+}
+
+/* Hide animation */
+.anim-message.hide {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.9);
+    pointer-events: none;
+}
+
+/* Close button */
+.anim-message .close-btn {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #fff;
+    background: rgba(0,0,0,0.2);
+    border: none;
+    border-radius: 50%;
+    font-size: 1.3rem;
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    opacity: 0.85;
+    transition: opacity 0.2s;
+}
+.anim-message .close-btn:hover {
+    opacity: 1;
+}
+
+/* Icon placeholder on left */
+.anim-message::before {
+    content: "";
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+/* Icon per type */
+.anim-message.success::before {
+    background-image: url("data:image/svg+xml,%3csvg fill='white' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath d='M20.285 6.708L9 18l-5.285-5.285 1.43-1.43L9 15.142 18.854 5.287z'/%3e%3c/svg%3e");
+}
+.anim-message.error::before, .anim-message.danger::before {
+    background-image: url("data:image/svg+xml,%3csvg fill='white' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.24 13.12-1.41 1.41L12 13.41l-2.83 2.83-1.41-1.41L10.59 12 7.76 9.17l1.41-1.41L12 10.59l2.83-2.83 1.41 1.41L13.41 12l2.83 2.83z'/%3e%3c/svg%3e");
+}
+.anim-message.info::before {
+    background-image: url("data:image/svg+xml,%3csvg fill='white' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath d='M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z'/%3e%3c/svg%3e");
+}
+
+/* Responsive font size */
+@media (max-width: 600px) {
+    .anim-message {
+        font-size: 1rem;
+        padding-left: 3rem;
+    }
+}
+
 
         @media (max-width: 600px) {
             html, body {
@@ -240,15 +284,7 @@
                 font-size: 1.3rem;
                 margin-bottom: 1.2rem !important;
             }
-            .page-message-absolute-block {
-                max-width: 96vw;
-                top: 0.7rem;
-                padding: 0 0.25rem;
-            }
-            .anim-message { 
-                font-size: 0.95rem;
-                padding: 0.9rem 1.2rem 0.9rem 2.8rem;
-            }
+            
             .form-label {
                 font-size: 0.95rem;
             }
@@ -318,13 +354,13 @@
                     </div>
                     <div class="buttons-row">
                         <button type="submit" class="btn btn-primary">Saqlash</button>
-                        <a href="{% url 'main:ish_request_list' %}" class="btn btn-secondary">Orqaga</a>
+                        <a href="{% url 'userapp:user_home' %}" class="btn btn-secondary">Orqaga</a>
                     </div>
                 </form>
+                {% include 'user/base.html' %}
             </div>
         </div>
     </div>
-    {% include 'user/base.html' %}
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // Add .form-control class to inputs if not already present

@@ -31,7 +31,6 @@ urlpatterns = [
     path('api/weekly-works/', get_weekly_work_summary, name='weekly-sales-works'),
     path('ish-request/create/', IshRequestCreateView.as_view(), name='ish_request_create'),
     path('ish-request/list/', IshRequestListView.as_view(), name='ish_request_list'),
-    path('ish-request/<int:pk>/', IshRequestDetailView.as_view(), name='ish_request_detail'),
     path('ish-request/<int:pk>/update/', IshRequestUpdateView.as_view(), name='ish_request_update'),    
     # Tasdiqlash/Rad etish
     path('ish-request/<int:pk>/approve/', approve_ish_request, name='ish_request_approve'),

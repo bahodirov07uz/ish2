@@ -1,23 +1,99 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Ish So'rovi #{{ ish_request.id }}</h2>
-<div class="card">
-    <div class="card-body">
-        <p><strong>Mahsulot:</strong> {{ ish_request.mahsulot.nomi }}</p>
-        <p><strong>Soni:</strong> {{ ish_request.soni }}</p>
-        <p><strong>Sana:</strong> {{ ish_request.sana }}</p>
-        <p><strong>Ishchi:</strong> {{ ish_request.ishchi.ism }} {{ ish_request.ishchi.familiya }}</p>
-        <p><strong>Holati:</strong> {{ ish_request.get_status_display }}</p>
-        <p><strong>Izoh:</strong> {{ ish_request.notes|default:"-" }}</p>
-        
-        <div class="mt-4">
-            {% if ish_request.status == 'pending' and user.is_superuser %}
+<style>
+    body {
+        background-color: #18192c;
+    }
+
+    .detail-wrapper {
+        max-width: 600px;
+        margin: 40px auto;
+        background-color: #1f2033;
+        padding: 25px 30px;
+        border-radius: 12px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.4);
+        color: #fff;
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #fff;
+    }
+
+    .detail-item {
+        margin-bottom: 15px;
+        border-bottom: 1px solid #333;
+        padding-bottom: 10px;
+    }
+
+    .detail-item strong {
+        color: #aaa;
+        display: inline-block;
+        width: 120px;
+    }
+
+    .btn-group {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin-top: 30px;
+    }
+
+    @media (max-width: 480px) {
+        .detail-wrapper {
+            padding: 20px;
+        }
+
+        .detail-item strong {
+            display: block;
+            width: 100%;
+            margin-bottom: 5px;
+        }
+
+        .btn-group {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="detail-wrapper">
+    <h2>Ish So'rovi #{{ ish_request.id }}</h2>
+
+    <div class="detail-item">
+        <strong>Mahsulot:</strong> {{ ish_request.mahsulot.nomi }}
+    </div>
+    <div class="detail-item">
+        <strong>Soni:</strong> {{ ish_request.soni }}
+    </div>
+    <div class="detail-item">
+        <strong>Sana:</strong> {{ ish_request.sana }}
+    </div>
+    <div class="detail-item">
+        <strong>Ishchi:</strong>
+        {% if ish_request.ishchi %}
+            {{ ish_request.ishchi.ism }} {{ ish_request.ishchi.familiya }}
+        {% else %}
+            -
+        {% endif %}
+    </div>
+    <div class="detail-item">
+        <strong>Holati:</strong> {{ ish_request.get_status_display }}
+    </div>
+    <div class="detail-item">
+        <strong>Izoh:</strong> {{ ish_request.notes|default:"-" }}
+    </div>
+
+    <div class="btn-group">
+        {% if ish_request.status == 'pending' and user.is_superuser %}
             <a href="{% url 'main:ish_request_approve' ish_request.pk %}" class="btn btn-success">Tasdiqlash</a>
             <a href="{% url 'main:ish_request_reject' ish_request.pk %}" class="btn btn-danger">Rad etish</a>
-            {% endif %}
-            <a href="{% url 'main:ish_request_list' %}" class="btn btn-secondary">Orqaga</a>
-        </div>
+        {% endif %}
+        <a href="{% url 'main:ish_request_list' %}" class="btn btn-outline-light">← Orqaga</a>
     </div>
 </div>
+{% include 'user/base.html' %}
+
 {% endblock %}

@@ -759,30 +759,31 @@ class IshRequestListView(LoginRequiredMixin, ListView):
     
     def get_queryset(self):
         queryset = super().get_queryset()
-        # Agar user superuser bo'lmasa, faqat o'z so'rovlarini ko'rsatish
-        if not self.request.user.is_superuser:
-            queryset = queryset.filter(user=self.request.user)
-        return queryset
+        if self.request.user.is_superuser:
+            return queryset
+        return queryset.filter(user=self.request.user)
 
-class IshRequestDetailView(DetailView,LoginRequiredMixin):
-    model = IshRequest
-    template_name = 'requests/ish_request_detail.html'
-    context_object_name = 'ish_request'
 
 class IshRequestUpdateView(LoginRequiredMixin, UpdateView):
     model = IshRequest
     form_class = IshRequestForm
     template_name = 'requests/ish_request_form.html'
-    
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if self.request.user.is_superuser:
+            return qs
+        return qs.filter(user=self.request.user)
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
-    
+
     def form_valid(self, form):
         messages.success(self.request, "Ish so'rovi muvaffaqiyatli yangilandi!")
         return super().form_valid(form)
-    
+
     def get_success_url(self):
         return reverse_lazy('main:ish_request_detail', kwargs={'pk': self.object.pk})
 

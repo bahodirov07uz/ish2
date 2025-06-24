@@ -25,7 +25,7 @@ urlpatterns = [
     path('', include('shop.urls')),
     path('login/',include('autentific.urls')),
     path('xomashyo/',include('xomashyo.urls')),
-    path('staff-app',include('user_app.urls'))
+    path('staff-app/',include('user_app.urls'))
 ]   
 
 

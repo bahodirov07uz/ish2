@@ -6,7 +6,10 @@ from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Sum, Count, Q
 from main.models import Ish, IshRequest, Ishchi, EskiIsh
-
+from calendar import monthrange
+from django.utils.timezone import now
+from django.http import JsonResponse
+from datetime import timedelta, date
 def user_home(request):
     # Foydalanuvchi tizimga kirmagan bo'lsa, login sahifasiga yo'naltiramiz
     if not request.user.is_authenticated:
@@ -136,3 +139,54 @@ def user_home(request):
     }
 
     return render(request, 'user/user_home.html', context)
+
+def ishchi_chart_page(request):
+    return render(request, 'user/statistics.html')
+
+def get_ish_chart_data(request):
+    user = request.user
+
+    # Foydalanuvchining ishchi profili borligini tekshiramiz
+    if not hasattr(user, 'ishchi_profile'):
+        return JsonResponse({'error': 'Ishchi profili topilmadi'}, status=400)
+
+    ishchi = user.ishchi_profile
+    today = now().date()
+
+    current_month_start = today.replace(day=1)
+    last_month_end = current_month_start - timedelta(days=1)
+    last_month_start = last_month_end.replace(day=1)
+
+    # Joriy oydagi ishlar (Ish modeli)
+    current_month_ish = Ish.objects.filter(
+        ishchi=ishchi,
+        sana__year=today.year,
+        sana__month=today.month
+    ).aggregate(
+        jami_narxi=Sum('narxi'),
+        jami_soni=Sum('soni')
+    )
+
+    # O‘tgan oydagi ishlar (EskiIsh modeli)
+    last_month_ish = EskiIsh.objects.filter(
+        ishchi=ishchi,
+        sana__year=last_month_start.year,
+        sana__month=last_month_start.month
+    ).aggregate(
+        jami_narxi=Sum('narxi'),
+        jami_soni=Sum('soni')
+    )
+
+    data = {
+        'labels': ['O‘tgan oy', 'Joriy oy'],
+        'jami_narxi': [
+            last_month_ish['jami_narxi'] or 0,
+            current_month_ish['jami_narxi'] or 0
+        ],
+        'jami_soni': [
+            last_month_ish['jami_soni'] or 0,
+            current_month_ish['jami_soni'] or 0
+        ]
+    }
+
+    return JsonResponse(data)

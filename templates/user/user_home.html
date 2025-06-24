@@ -322,7 +322,7 @@
         <div class="main-content">
             <h2 class="section-title">
                 Oxirgi topshiriqlar
-                <a href="#" class="see-all">Hammasini ko'rish</a>
+                <a href="{% url 'main:ish_request_list' %}" class="see-all">Hammasini ko'rish</a>
             </h2>
             <ul class="task-list">
                 {% for work in recent_works %}
@@ -347,7 +347,7 @@
         <div class="main-content">
             <h2 class="section-title">
                 Jarayondagi so'rovlar
-                <a href="#" class="see-all">Hammasini ko'rish</a>
+                <a href="{% url 'main:ish_request_list' %}" class="see-all">Hammasini ko'rish</a>
             </h2>
             <ul class="task-list">
                 {% for request in pending_requests %}
